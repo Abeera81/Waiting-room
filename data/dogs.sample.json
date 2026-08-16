@@ -1,0 +1,100 @@
+{
+  "_warning": "PLACEHOLDER DATA — NOT REAL SHELTER LISTINGS. Every field below is invented for local development and MUST NOT ship. The real file is data/dogs.json, supplied by a human from real shelter records. Delete this file before deploying.",
+  "_placeholder": true,
+  "dogs": [
+    {
+      "id": "sample-a",
+      "name": "PLACEHOLDER-A",
+      "hero": false,
+      "listing_text": "SAMPLE DATA — NOT A REAL LISTING. Placeholder paragraph standing in for verbatim shelter text so the card layout has something of roughly the right length to hold. This animal does not exist. Do not read anything into it.",
+      "attributes": {
+        "age_years": 9,
+        "age_band": "senior",
+        "breed": "PLACEHOLDER Mix",
+        "size": "large",
+        "intake_type": "owner_surrender",
+        "days_in_shelter": 214,
+        "return_count": 0,
+        "medical_note": null,
+        "behaviour_notes": ["good_with_children", "no_cats"]
+      },
+      "voice_prompt": "PLACEHOLDER low, slow, weary, patient, lower, resonant, quiet and tired, resigned",
+      "voice_rationale": "PLACEHOLDER senior + large + 214 days + owner surrender",
+      "audio": {
+        "flat": "public/audio/sample_a_flat.mp3",
+        "designed": "public/audio/sample_a_designed.mp3"
+      },
+      "source": { "shelter": "PLACEHOLDER SHELTER", "captured": "2026-08-16" }
+    },
+    {
+      "id": "sample-b",
+      "name": "PLACEHOLDER-B",
+      "hero": false,
+      "listing_text": "SAMPLE DATA — NOT A REAL LISTING. A shorter placeholder body, here to prove the card survives a listing that runs about a third the length of the one above it. This animal does not exist.",
+      "attributes": {
+        "age_years": 1,
+        "age_band": "young",
+        "breed": "PLACEHOLDER Terrier",
+        "size": "small",
+        "intake_type": "returned",
+        "days_in_shelter": 41,
+        "return_count": 2,
+        "medical_note": "PLACEHOLDER medical note",
+        "behaviour_notes": ["no_dogs"]
+      },
+      "voice_prompt": "PLACEHOLDER quick, energetic, eager, higher, clipped, a little flat, anxious, over-eager, trying too hard, uncertain",
+      "voice_rationale": "PLACEHOLDER young + small + 41 days + 2 returns",
+      "audio": {
+        "flat": "public/audio/sample_b_flat.mp3",
+        "designed": "public/audio/sample_b_designed.mp3"
+      },
+      "source": { "shelter": "PLACEHOLDER SHELTER", "captured": "2026-08-16" }
+    },
+    {
+      "id": "sample-hero",
+      "name": "PLACEHOLDER-HERO",
+      "hero": true,
+      "listing_text": "SAMPLE DATA — NOT A REAL LISTING. Placeholder text for the hero card, which carries the stay slider. Long enough that a listener can hear the voice change part-way through a sentence rather than between them. This animal does not exist.",
+      "attributes": {
+        "age_years": 4,
+        "age_band": "adult",
+        "breed": "PLACEHOLDER Shepherd Mix",
+        "size": "medium",
+        "intake_type": "stray",
+        "days_in_shelter": 214,
+        "return_count": 0,
+        "medical_note": null,
+        "behaviour_notes": ["good_with_dogs"]
+      },
+      "voice_prompt": "PLACEHOLDER even, steady, measured, quiet and tired, watchful",
+      "voice_rationale": "PLACEHOLDER adult + medium + 214 days + stray",
+      "audio": {
+        "flat": "public/audio/sample_hero_flat.mp3",
+        "designed": "public/audio/sample_hero_designed.mp3"
+      },
+      "timeline": [
+        {
+          "day": 1,
+          "voice_prompt": "PLACEHOLDER even, steady, measured, watchful",
+          "audio": "public/audio/sample_hero_d001.mp3"
+        },
+        {
+          "day": 30,
+          "voice_prompt": "PLACEHOLDER even, steady, measured, a little flat, watchful",
+          "audio": "public/audio/sample_hero_d030.mp3"
+        },
+        {
+          "day": 120,
+          "voice_prompt": "PLACEHOLDER even, steady, measured, quiet and tired, watchful",
+          "audio": "public/audio/sample_hero_d120.mp3"
+        },
+        {
+          "day": 214,
+          "voice_prompt": "PLACEHOLDER even, steady, measured, quiet and tired, watchful",
+          "audio": "public/audio/sample_hero_d214.mp3"
+        }
+      ],
+      "source": { "shelter": "PLACEHOLDER SHELTER", "captured": "2026-08-16" }
+    }
+  ]
+}

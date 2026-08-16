@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Waiting Room</title>
+    <meta
+      name="description"
+      content="Eight real shelter dogs, each listing read twice — once by an institutional voice, once by a voice generated from that dog's own record."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <div id="placeholder-banner" class="banner" role="status" hidden>
+      <strong>PLACEHOLDER DATA.</strong> These dogs are not real and this audio is silent.
+      Development build only.
+    </div>
+
+    <div id="swap-check" class="swap-check">
+      <span class="swap-check__label">swap check</span>
+      <button class="btn" type="button" data-action="check-play">Play tone</button>
+      <button class="btn" type="button" data-action="check-swap" data-tone="low">220 Hz</button>
+      <button class="btn" type="button" data-action="check-swap" data-tone="high">660 Hz</button>
+      <span class="swap-check__clock">00:00</span>
+      <code class="swap-check__src">—</code>
+    </div>
+
+    <header class="masthead">
+      <h1>The Waiting Room</h1>
+      <p class="masthead__thesis">
+        A shelter listing is a document. Read flat, it tells you almost nothing. Every voice here is
+        generated from the record itself — the same words, twice.
+      </p>
+    </header>
+
+    <main id="shelf" class="shelf"></main>
+
+    <footer class="colophon">
+      <p>Built for the DEV Weekend Challenge: Dog Days Edition. Audio pre-generated with ElevenLabs Voice Design.</p>
+    </footer>
+
+    <!-- One shared element for the whole page. See src/audioBus.js. -->
+    <audio id="stage" preload="metadata"></audio>
+
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>
