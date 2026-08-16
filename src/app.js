@@ -1,5 +1,5 @@
 import { AudioBus, formatTime } from './audioBus.js';
-import { derive } from './voicePrompt.js';
+import { derive, buildVoicePrompt } from './voicePrompt.js';
 import { findSharedSentences } from './sharedText.js';
 
 const DATA_URL = 'data/dogs.json';
@@ -212,6 +212,10 @@ function renderSlider(dog) {
              aria-valuetext="${esc(stops[0].label)}, ${stops[0].days} days" />
       <div class="slider__ticks">${ticks}</div>
       <p class="slider__readout"><b class="slider__days">${stops[0].days}</b> days in shelter</p>
+      <div class="slider__prompt" aria-live="polite">
+        <span class="slider__prompt-label">Voice Design prompt at this stop</span>
+        <code class="slider__prompt-text"></code>
+      </div>
     </div>
   `;
 }
@@ -279,6 +283,16 @@ function updateStay(dog, index) {
 
   entry.el.querySelector('.slider__days').textContent = String(stop.days);
   entry.el.querySelector('.derivation > div').innerHTML = renderDerivation(attributes);
+
+  // The prompt is the thing that changed; show it where the hand is.
+  const promptEl = entry.el.querySelector('.slider__prompt-text');
+  const next = buildVoicePrompt(attributes);
+  if (promptEl.textContent !== next) {
+    promptEl.textContent = next;
+    promptEl.classList.remove('is-fresh');
+    void promptEl.offsetWidth; // restart the highlight
+    promptEl.classList.add('is-fresh');
+  }
   entry.el.style.setProperty('--stay', String(index / (dog.timeline.length - 1)));
   entry.el.dataset.stay = stop.label;
 

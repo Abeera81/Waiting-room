@@ -76,9 +76,22 @@ body {
 }
 
 .masthead__thesis {
-  margin: 0;
+  margin: 0 0 1.2rem;
   max-width: 52ch;
   font-weight: 300;
+}
+
+/* The headline finding. It was inheriting body defaults and reading as a
+   footnote; it is the argument, so it gets the weight. */
+.masthead__note {
+  margin: 0;
+  max-width: 46ch;
+  padding-left: 0.9rem;
+  border-left: 3px solid var(--ink);
+  font-size: clamp(1rem, 2.6vw, 1.25rem);
+  line-height: 1.55;
+  font-weight: 500;
+  color: var(--ink);
 }
 
 /* ---- cards -------------------------------------------------------------- */
@@ -270,8 +283,13 @@ body {
 
 .slider {
   margin: 0 0 1rem;
-  padding: 0.8rem;
-  border: 1px solid var(--rule);
+  padding: 1.1rem 1.1rem 1rem;
+  border: 1px solid var(--ink);
+}
+
+.card.is-hero {
+  border-color: var(--ink);
+  border-width: 2px;
 }
 
 .slider__label {
@@ -292,37 +310,104 @@ body {
   font-style: italic;
 }
 
+/* The slider is the centrepiece, not a divider: a real track with real hit
+   area, and stops you can read without hunting. */
 .slider__input {
   width: 100%;
   margin: 0;
+  height: 2.25rem;
   accent-color: var(--ink);
+  cursor: pointer;
 }
 
 .slider__ticks {
   display: flex;
   justify-content: space-between;
-  margin-top: 0.3rem;
-  font-size: 10px;
+  margin-top: 0.1rem;
+  font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #6b665c;
 }
 
+.slider__tick {
+  flex: 1;
+  text-align: center;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--rule);
+}
+
+.slider__tick:first-child {
+  text-align: left;
+}
+
+.slider__tick:last-child {
+  text-align: right;
+}
+
 .slider__tick.is-on {
   color: var(--ink);
-  font-weight: 500;
+  font-weight: 700;
+  border-top-color: var(--ink);
 }
 
 .slider__readout {
-  margin: 0.6rem 0 0;
-  font-size: 12px;
+  margin: 0.8rem 0 0;
+  font-size: 13px;
   color: #6b665c;
 }
 
 .slider__days {
-  font-size: 15px;
+  font-family: var(--display);
+  font-size: 2.25rem;
+  line-height: 1;
   font-variant-numeric: tabular-nums;
   color: var(--ink);
+  vertical-align: -0.15em;
+  margin-right: 0.15em;
+}
+
+.slider__prompt {
+  margin-top: 0.8rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--rule);
+}
+
+.slider__prompt-label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6b665c;
+}
+
+.slider__prompt-text {
+  display: block;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+/* A brief warm wash on the words that just changed. */
+.slider__prompt-text.is-fresh {
+  animation: prompt-refresh 900ms ease-out;
+}
+
+@keyframes prompt-refresh {
+  from {
+    background: var(--warm);
+  }
+  to {
+    background: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slider__prompt-text.is-fresh {
+    animation: none;
+  }
 }
 
 /* The card cools as the stay lengthens — the one place motion earns its keep.
