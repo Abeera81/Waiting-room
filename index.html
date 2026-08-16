@@ -6,96 +6,123 @@
     <title>The Waiting Room</title>
     <meta
       name="description"
-      content="Eight real shelter dogs. One template. Every listing read twice — once by a stock voice, once by a voice generated from that dog's own record."
+      content="A listening study. Eight real shelter dogs, eight real listings, each read twice — once in the shelter's voice, once in a voice designed from that dog's own record."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
-    <a class="skip-link" href="#featured">Skip to the records</a>
+    <a class="skip-link" href="#deck">Skip to the records</a>
 
-    <!-- ── COVER ────────────────────────────────────────────────────────── -->
-    <header class="cover">
-      <p class="cover__slug">
-        <span>The Waiting Room</span>
-        <span class="cover__file">File 01 / Eight records</span>
-      </p>
+    <!-- ── EDITORIAL INTRODUCTION ───────────────────────────────────────── -->
+    <header class="intro">
+      <h1 class="intro__title"><span>The</span><span>Waiting</span><span>Room</span></h1>
 
-      <h1 class="cover__title" aria-label="The Waiting Room">
-        <span>The</span><span>Waiting</span><span>Room</span>
-      </h1>
-
-      <div class="cover__deck">
-        <p class="cover__lede">Eight shelter dogs.<br />One template.</p>
-        <p class="cover__body">
-          Every listing below is reproduced word for word from a real shelter. Each is read twice:
-          once by a stock voice, once by a voice generated from that dog's own record. The words
-          never change. Only the voice does.
-        </p>
+      <div class="intro__premise">
+        <p class="intro__lede">Eight shelter dogs.<br />One template.</p>
+        <hr class="intro__rule" />
+        <p class="intro__sub">Three of them were given the exact same sentence.</p>
       </div>
 
-      <!-- The finding. Built from the listings at load — see src/sharedText.js -->
-      <section class="finding" id="finding" aria-labelledby="finding-heading">
-        <h2 class="finding__heading" id="finding-heading">The finding</h2>
-        <div class="finding__body"></div>
-      </section>
+      <!-- Built from the listings at load — see src/sharedText.js -->
+      <div class="intro__finding" id="finding"></div>
+
+      <p class="intro__stamp" aria-hidden="true">
+        <span>A</span><span>Listening</span><span>Study</span>
+      </p>
     </header>
 
-    <main>
-      <!-- ── FEATURED RECORD ────────────────────────────────────────────── -->
-      <section id="featured" class="featured" tabindex="-1" aria-label="Featured record"></section>
+    <!-- ── THE DECK ─────────────────────────────────────────────────────── -->
+    <main class="stage">
+      <div class="deck" id="deck" tabindex="-1">
+        <button class="arrow arrow--prev" type="button" data-nav="prev" aria-label="Previous record">
+          <span aria-hidden="true">←</span>
+        </button>
 
-      <!-- ── ARCHIVE ────────────────────────────────────────────────────── -->
-      <section class="archive" aria-labelledby="archive-heading">
-        <div class="archive__head">
-          <h2 class="archive__title" id="archive-heading">The archive</h2>
-          <p class="archive__note">Seven further records, filed as found.</p>
-        </div>
-        <div id="shelf" class="shelf"></div>
-      </section>
+        <div class="deck__cards" id="cards" aria-live="polite"></div>
+
+        <button class="arrow arrow--next" type="button" data-nav="next" aria-label="Next record">
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+
+      <p class="deck__hint">
+        <span class="deck__hint-glyph" aria-hidden="true">☞</span>
+        Drag the card, use <kbd>←</kbd> <kbd>→</kbd>, or pick a record below
+      </p>
+
+      <!-- ── DOG INDEX ──────────────────────────────────────────────────── -->
+      <nav class="index" id="index" aria-label="All records"></nav>
     </main>
 
-    <footer class="colophon">
-      <div class="colophon__grid">
-        <div class="colophon__block">
-          <h3>The voices</h3>
+    <!-- ── PROJECT EXPLANATION ──────────────────────────────────────────── -->
+    <footer class="about">
+      <div class="about__grid">
+        <section class="about__col">
+          <h2>About the project</h2>
           <p>
-            The <b>flat</b> reading is ElevenLabs' stock voice &ldquo;Roger&rdquo; — described by
-            ElevenLabs as charismatic, positive and conversational. It is not a monotone robot; it is
-            the upbeat register shelter marketing is written in. The <b>designed</b> reading was
-            generated with ElevenLabs Voice Design from a prompt built by
-            <code>buildVoicePrompt()</code>, which reads the shelter's own record. Both use Eleven
-            Multilingual v2. The contrast is one of tone, not of expressiveness.
+            Shelter listings are written for everyone, but adoption is an emotional decision made
+            from those words. This project reads each listing twice — once in a conventional
+            listing voice, once in a voice generated from that dog's own record. Same words. Two
+            readings.
           </p>
-        </div>
+          <p>
+            Every word of every listing is reproduced verbatim from the shelter. Not one word is
+            ours.
+          </p>
+        </section>
 
-        <div class="colophon__block">
-          <h3>The number nobody publishes</h3>
-          <p>
-            No shelter publishes an intake date. Not one of these listings says how long the animal
-            has been waiting, so <code>days_in_shelter</code> reads <i>unknown</i> on every record and
-            no dog's own voice carries a weariness modifier. Weariness appears in one place only —
-            Yuji's stay dial, which demonstrates what the function does with that variable rather than
-            reporting a real stay. We can hear what waiting does to a voice; we cannot tell you how
-            long any of these dogs has actually waited.
+        <section class="about__col">
+          <h2>How it works</h2>
+          <ol class="steps">
+            <li>
+              <span class="steps__n">01</span>
+              Listings come from Petfinder and Oregon Humane Society, captured 2026-08-16.
+            </li>
+            <li>
+              <span class="steps__n">02</span>
+              A documented function turns each record's attributes into an ElevenLabs Voice Design
+              prompt.
+            </li>
+            <li>
+              <span class="steps__n">03</span>
+              You listen to both readings and decide what you hear.
+            </li>
+          </ol>
+          <p class="about__fine">
+            Flat is ElevenLabs' stock voice “Roger”, described by ElevenLabs as charismatic,
+            positive and conversational — the register shelter marketing is already written in. Both
+            readings use Eleven Multilingual v2. Audio is pre-generated, so this page makes no API
+            calls and holds no keys.
           </p>
-        </div>
+        </section>
 
-        <div class="colophon__block">
-          <h3>Method</h3>
+        <section class="about__col">
+          <h2>Note</h2>
           <p>
-            Audio is pre-generated and committed, so this page makes no API calls and holds no keys.
-            Listing text was captured 2026-08-16 and is reproduced verbatim; these dogs may already be
-            adopted. The voices are an interpretation of a record, not a measurement of an animal.
+            These are real dogs who were waiting for real homes. If you are ready to adopt, contact
+            the shelter directly — every record links to its source.
           </p>
-          <p class="colophon__sig">Built for the DEV Weekend Challenge: Dog Days Edition.</p>
-        </div>
+          <p class="about__fine">
+            No shelter publishes an intake date, so no dog's own voice carries a weariness
+            modifier. Weariness appears in one place only: Yuji's stay dial, which demonstrates what
+            the function does with that variable rather than reporting a real stay. We can hear what
+            waiting does to a voice; we cannot tell you how long any of these dogs has actually
+            waited.
+          </p>
+          <p class="about__heart" aria-hidden="true">♥</p>
+        </section>
       </div>
+
+      <p class="about__foot">
+        <span>The Waiting Room</span>
+        <span>Built for the DEV Weekend Challenge: Dog Days Edition</span>
+      </p>
     </footer>
 
     <!-- One shared element for the whole page. See src/audioBus.js. -->

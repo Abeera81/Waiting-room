@@ -179,31 +179,31 @@ As the slider moves right the card should visibly cool — this is the one place
 
 ## 7. Visual direction
 
-**Subject world:** municipal animal-control paperwork meets broadcast radio. Kennel cards, stamped dates, cage numbers — against VU meters and an on-air light.
+**Subject world:** a desk with a stack of municipal shelter records on it. The visitor picks up one record at a time and hears what it sounds like when that record speaks.
 
-The card **is** an institutional document in flat mode and **becomes** something warm in voice mode. The visual transition carries the same argument as the audio. That is the signature element; spend all boldness there, keep everything else quiet.
+The card **is** an institutional document in flat mode and **becomes** something warm in designed mode. The visual transition carries the same argument as the audio. That is the signature element; spend all boldness there, keep everything else quiet.
+
+**Reference:** `reference/waiting-room-reference.png.png` is the visual north star, supplied 2026-08-17. Treat it as art direction, never as content — its card copy is mock and contradicts the real data (it labels Yuji as Oregon Humane, "3 YR", and rewrites his listing). **Composition from the image, every word from `dogs.json`.**
 
 ```
---paper   #E8E4DA   manila kennel card
---ink     #1C1A17   stamped ink
---rule    #B8B0A0   form rules
---on-air  #D8442F   ONLY the live indicator
---warm    #F2C14E   voice-mode accent
+--desk    #D8D0C1   the surface the records sit on
+--paper   #F4EFE3   a shelter record
+--ink     #25211D   primary text
+--muted   #6F675D   administrative, secondary
+--rule    #B9AE9D   document dividers
+--on-air  #C94A38   ONLY the live audio indicator
+--warm    #E4B64F   ONLY the designed-voice state
 ```
 
-No sixth colour.
+No eighth colour. Shadows are `--ink` at low alpha, never a new hue.
 
-**Type:** condensed grotesque for names (Archivo Condensed / Oswald); monospace for listing text and data (IBM Plex Mono) because kennel cards are typewritten. In voice mode the mono **relaxes** — lighter weight, looser tracking. Never swap font families.
+**Type:** condensed grotesque for the title and dog names (Archivo Narrow / Oswald); IBM Plex Mono for everything else because kennel cards are typewritten. Mono is the document's language, **not an excuse for small text** — the listing never drops below 16px and sits at 1.85 line-height. Labels are 0.6875rem uppercase and always secondary.
 
-**Composition — three levels, and they must not compete.**
+**The structure is a card deck, not a list.** One record at a time on a desk, with the next few cards showing their top edges beneath it. Navigation by arrows, drag/swipe, arrow keys, and a tab index. Four parts: editorial introduction → deck → index → project explanation. The active card is the single visual centre; nothing else may compete with it.
 
-1. **The cover.** Title set to fill the measure, then `Eight shelter dogs. / One template.`, then **the finding**: the shared sentence as the largest quoted type on the page, the three names beneath it, a single warm bar under the quote. This is the only sanctioned use of `--warm` outside designed mode.
-2. **The featured record.** Yuji is a specimen sheet, not a larger card — name at up to 13rem, listing at reading size in its own column, instruments (voice test, stay dial, facts, derivation) in a ruled column beside it.
-3. **The archive.** Seven records filed in sequence off a shared left rail carrying the file number. Hairline rules between records, no boxes, generous vertical space. Names at up to 4.75rem — clearly subordinate to Yuji, clearly dominant over their own metadata.
+**Physicality, kept sophisticated.** Subtle radius (5px), two-layer shadow, ~0.7rem offsets between stacked cards, one very quiet grain on the desk. No random rotations, no scrapbook, no big shadows. The card tilts fractionally while dragged and never otherwise.
 
-**No boxes.** `border-radius: 0` globally. Records are separated by rules and whitespace, never by rounded rectangles. No gradients, shadows, textures, icons or illustrations — richness comes from scale, alignment, rules and empty paper.
-
-**The two coloured states.** `--on-air` appears only as the ON AIR dot and word, only while audio is playing, and nowhere else. `--warm` marks the designed reading: the record's paper warms by ~7%, and on the hero that warmth *drains as the dial moves right* — the document cools as the stay lengthens. Never a yellow page.
+**The two coloured states.** `--on-air` appears only as the ON AIR dot and word, only while audio is actually playing, plus the record counter and active tab marker. `--warm` marks the designed reading: the card's paper warms ~13% toward amber, and on Yuji that warmth *drains as the stay dial moves right* — the document cools as the wait lengthens. Never a yellow page.
 
 **Type:** condensed grotesque for names and display (Archivo Narrow / Oswald); IBM Plex Mono for everything else because kennel cards are typewritten. Administrative labels are 0.6875rem uppercase at 0.18em tracking and always secondary. Listing text is never smaller than 17px.
 
@@ -304,4 +304,5 @@ One line per completed step from §8: what was done, what is verified working.
 - **Hero audio correction (human's generation log, 2026-08-17).** `yuji_designed.mp3` had been generated from the day-730 string rather than the derived one; deleted. The hero's designed track now points at `yuji_d003.mp3`, which was generated from exactly the derived prompt. This is not a workaround: Yuji's record (`days_in_shelter: "unknown"`) and the Week 1 stop (3 days) both fire no weariness modifier, so they derive the *identical* prompt and are legitimately the same recording. A test asserts the two prompts stay equal, so the reuse fails loudly if either changes. `public/audio/` now holds 19 files. The other seven dogs match the derived prompts exactly, verified against the human's log.
 - **Post additions:** §11 item 8 is now "the variable we could not get" — no shelter publishes intake dates, so no dog carries weariness in its own voice and the slider is the only place it appears. The same statement is on the page in the colophon, because every card shows "Days in shelter: unknown" and that needs explaining where it is read.
 - **Art direction pass (human's brief, 2026-08-17).** The page was functional but read as a dense admin dashboard in a typewriter font — one beige column of same-weight rectangles. Recomposed from the ground up into three levels (§7): an editorial **cover** ending in the finding set as the largest quoted type on the page; **Yuji as a specimen sheet** with a different composition rather than a bigger card; and an **archive** of seven records filed off a shared left rail with hairline rules and no boxes. `index.html` and `src/styles.css` rewritten; `src/app.js` render layer rewritten (`renderRecord` replaces `renderCard`, plus `renderFinding`, `renderListing`, `renderThread`, `renderDial`). Audio logic, state, data and tests untouched. New: shared sentences are **marked inside the listing text itself** so the template is visible in the document, and each affected record links to the others reading the same words. The stay dial is now a drawn instrument — ruled track, four struck graduations, a travelling square marker — with the native range input invisible on top so keyboard and screen-reader behaviour stays real. `--on-air` is confined to the playing indicator; `--warm` to designed mode and one bar under the finding, and it *drains* as the hero's dial moves right. **Verified:** five hex colours in the stylesheet and no sixth; 32 tests still pass; full DOM render exercised in jsdom — 8 records, finding built from data, dial stepping through four distinct prompts, mode toggle switching state. **Not verified visually** — the browser extension is still disconnected, so nothing here has been seen rendered.
+- **Card-deck rebuild (human's reference image, 2026-08-17).** The scrolling archive is gone. The page is now **editorial introduction → card deck → tab index → project explanation**, with one record at a time on a `--desk` surface and the next three cards showing their top edges beneath it. Palette replaced with the human's seven warmer tokens; `index.html`, `src/styles.css` and the `src/app.js` presentation layer rewritten. `src/audioBus.js`, `voicePrompt.js`, `sharedText.js`, the data and all 32 tests are untouched. Navigation: arrows, pointer drag/swipe, ArrowLeft/ArrowRight, and the tab index — all four routed through one `goTo()` that stops playback, so **two dogs can never sound at once**. The FLAT/DESIGNED control is now a single split bar with a knob on the seam; designed warms the card ~13% and, on Yuji, that warmth drains as the dial moves right. Added a quiet waveform progress bar (click to seek) — **decorative bars, deterministic from the dog id, not an analysis of the audio**, and it is never presented as one. **Verified in jsdom:** all four navigation routes, audio stopping on record change, mode swap holding the record while changing the file, finding→record jumps, echo links between Sterling/Ponyboy/Hart, dial stepping through four distinct prompts and files, and drag committing past threshold but not below it. Two bugs found and fixed here: the keydown guard called `.closest()` on a non-Element target, and a zero-width measurement collapsed the drag threshold so any click counted as a swipe. **Still not verified visually** — the browser extension remains disconnected.
 - **Pre-deploy:** dev scaffolding (swap-check bar, placeholder banner, test tone WAVs, all sample data) stripped at step 7 — checklist under §8 complete except the final live-URL reload. **Push and Pages enablement are the human's, deliberately not done by the agent.**

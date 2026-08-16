@@ -1,38 +1,36 @@
-/* The Waiting Room — a document that happens to be interactive.
-   Five colours, two faces, no decoration. Everything is carried by scale,
-   whitespace, alignment and hairline rules. */
+/* The Waiting Room — a listening study.
+   A desk, a stack of shelter records, and one card at a time.
+   Seven tokens, two faces, no decoration beyond paper and rules. */
 
 :root {
-  --paper: #e8e4da;
-  --ink: #1c1a17;
-  --rule: #b8b0a0;
-  --on-air: #d8442f;
-  --warm: #f2c14e;
-
-  /* Tints mixed from the five, never a sixth hue. */
-  --ink-60: color-mix(in srgb, var(--ink) 60%, var(--paper));
-  --ink-45: color-mix(in srgb, var(--ink) 45%, var(--paper));
-  --hairline: color-mix(in srgb, var(--rule) 70%, var(--paper));
+  --desk: #d8d0c1;
+  --paper: #f4efe3;
+  --ink: #25211d;
+  --muted: #6f675d;
+  --rule: #b9ae9d;
+  --on-air: #c94a38;
+  --warm: #e4b64f;
 
   --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --display: 'Archivo Narrow', 'Archivo Condensed', Oswald, system-ui, sans-serif;
 
-  --gutter: clamp(1.25rem, 5vw, 5rem);
-  --page: 84rem;
-  --measure: 34rem;
+  --gutter: clamp(1.1rem, 4vw, 4rem);
+  --page: 78rem;
+  --card-w: min(46rem, 100%);
 
-  /* One vertical rhythm for the whole page. */
-  --space-s: clamp(0.75rem, 1.5vw, 1.25rem);
-  --space-m: clamp(1.5rem, 3vw, 2.75rem);
-  --space-l: clamp(3rem, 7vw, 6.5rem);
-  --space-xl: clamp(5rem, 12vw, 11rem);
+  --s-1: clamp(0.5rem, 1vw, 0.75rem);
+  --s-2: clamp(0.9rem, 1.8vw, 1.4rem);
+  --s-3: clamp(1.5rem, 3vw, 2.5rem);
+  --s-4: clamp(2.5rem, 5vw, 4.5rem);
+  --s-5: clamp(4rem, 8vw, 7rem);
+
+  --card-radius: 5px;
 }
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
-  border-radius: 0; /* nothing on this page is rounded */
 }
 
 html {
@@ -41,14 +39,14 @@ html {
 
 body {
   margin: 0;
-  background: var(--paper);
+  background-color: var(--desk);
+  /* A single very quiet grain across the desk. Nothing photographic. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
   color: var(--ink);
   font-family: var(--mono);
   font-size: 16px;
   line-height: 1.6;
-  font-weight: 400;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
 }
 
 :focus-visible {
@@ -58,12 +56,20 @@ body {
 
 a {
   color: inherit;
-  text-decoration-color: var(--rule);
   text-underline-offset: 0.2em;
+  text-decoration-color: var(--rule);
 }
 
 a:hover {
   text-decoration-color: var(--ink);
+}
+
+kbd {
+  padding: 0.05em 0.35em;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  font: inherit;
+  font-size: 0.85em;
 }
 
 .skip-link {
@@ -80,7 +86,7 @@ a:hover {
 .skip-link:focus {
   left: var(--gutter);
   top: 1rem;
-  z-index: 20;
+  z-index: 40;
 }
 
 .visually-hidden {
@@ -88,546 +94,796 @@ a:hover {
   width: 1px;
   height: 1px;
   margin: -1px;
-  padding: 0;
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
-  border: 0;
 }
 
-/* The one small type style used throughout for administrative labels.
-   Always secondary — it never competes with a name or a listing. */
-.label {
-  margin: 0 0 0.75rem;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-45);
-}
+/* ══ INTRODUCTION ═════════════════════════════════════════════════════════ */
 
-.label code {
-  font-size: inherit;
-  letter-spacing: 0.06em;
-  text-transform: none;
-  color: var(--ink-60);
-}
-
-/* ══ COVER ════════════════════════════════════════════════════════════════ */
-
-.cover {
+.intro {
+  display: grid;
+  gap: var(--s-3);
   max-width: var(--page);
   margin: 0 auto;
-  padding: clamp(1.5rem, 4vw, 3rem) var(--gutter) 0;
+  padding: var(--s-4) var(--gutter) var(--s-3);
 }
 
-.cover__slug {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin: 0 0 var(--space-xl);
-  padding-bottom: 0.7rem;
-  border-bottom: 1px solid var(--ink);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.cover__file {
-  color: var(--ink-45);
-}
-
-/* The title sets the scale for everything below it. Three words, three lines,
-   filling the measure — the page opens like a cover, not a header bar. */
-.cover__title {
+.intro__title {
   margin: 0;
   font-family: var(--display);
   font-weight: 700;
-  font-size: clamp(3.5rem, 17vw, 15rem);
-  line-height: 0.82;
+  font-size: clamp(2.75rem, 7vw, 5.5rem);
+  line-height: 0.86;
   letter-spacing: -0.02em;
   text-transform: uppercase;
 }
 
-.cover__title span {
+.intro__title span {
   display: block;
 }
 
-.cover__title span:nth-child(2) {
-  text-indent: 0.09em;
-}
-
-.cover__title span:last-child {
-  text-indent: 0.18em;
-}
-
-.cover__deck {
-  display: grid;
-  gap: var(--space-m);
-  margin-top: var(--space-l);
-  padding-top: var(--space-m);
-  border-top: 1px solid var(--ink);
-}
-
-.cover__lede {
+.intro__lede {
   margin: 0;
-  font-family: var(--display);
-  font-size: clamp(1.75rem, 4.5vw, 3.25rem);
-  font-weight: 500;
-  line-height: 1.05;
-  letter-spacing: -0.01em;
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
+  line-height: 1.5;
 }
 
-.cover__body {
+.intro__rule {
+  width: 100%;
+  max-width: 16rem;
+  margin: var(--s-2) 0;
+  border: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.intro__sub {
   margin: 0;
-  max-width: var(--measure);
-  font-weight: 300;
-  line-height: 1.8;
-  color: var(--ink-60);
+  max-width: 26ch;
+  color: var(--muted);
+  line-height: 1.6;
 }
 
-@media (min-width: 60rem) {
-  .cover__deck {
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
-    gap: var(--space-l);
-  }
-}
-
-/* ══ THE FINDING ══════════════════════════════════════════════════════════
-   The conceptual centre of the piece. It gets the largest quoted type on the
-   page and a full band of empty paper on either side of it. */
-
-.finding {
-  margin: var(--space-xl) 0 var(--space-l);
-  padding: var(--space-m) 0 var(--space-l);
-  border-top: 3px solid var(--ink);
-  border-bottom: 1px solid var(--ink);
-}
-
-.finding__heading {
-  margin: 0 0 var(--space-l);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--ink-45);
-}
-
+/* The finding. Largest quoted type on the page, with the one warm rule. */
 .finding__quote {
   margin: 0;
-  max-width: 22ch;
-  font-family: var(--display);
-  font-size: clamp(2rem, 7.5vw, 6rem);
-  font-weight: 600;
-  line-height: 1.02;
-  letter-spacing: -0.015em;
-  text-wrap: balance;
+  max-width: 30ch;
+  font-size: clamp(1.15rem, 2.35vw, 1.85rem);
+  line-height: 1.45;
+  font-weight: 400;
+  quotes: '“' '”';
 }
 
-/* The one restrained use of warmth outside designed mode: a struck-through
-   underline beneath the sentence the shelters reuse. */
+.finding__quote::before {
+  content: open-quote;
+}
+
 .finding__quote::after {
+  content: close-quote;
+}
+
+#finding::after {
   content: '';
   display: block;
   width: min(100%, 26rem);
-  height: 0.5rem;
-  margin-top: var(--space-m);
+  height: 4px;
+  margin: var(--s-2) 0 var(--s-1);
   background: var(--warm);
-}
-
-.finding__attrib {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: var(--space-m);
-  margin-top: var(--space-m);
 }
 
 .finding__names {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem 1.1rem;
+  align-items: center;
+  gap: 0.6rem;
   margin: 0;
   font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  letter-spacing: 0.18em;
 }
 
-.finding__names span + span::before {
-  content: '·';
-  margin-right: 1.1rem;
+.finding__names button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+}
+
+.finding__names button:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+.finding__dot {
   color: var(--rule);
 }
 
-.finding__count {
+/* A debossed stamp, not a logo. */
+.intro__stamp {
+  display: none;
+  place-self: start end;
   margin: 0;
-  font-family: var(--display);
-  font-size: clamp(1.25rem, 2.6vw, 2rem);
-  font-weight: 500;
-  line-height: 1.15;
-  text-align: right;
-}
-
-.finding__gloss {
-  margin: var(--space-m) 0 0;
-  max-width: var(--measure);
-  font-weight: 300;
-  line-height: 1.8;
-  color: var(--ink-60);
-}
-
-/* ══ RECORDS ══════════════════════════════════════════════════════════════ */
-
-.record {
-  --stay: 0;
-  position: relative;
-  transition: background-color 400ms ease;
-}
-
-/* Designed mode warms the paper — a shift, never a colour wash. The hero
-   cools again as the stay lengthens, so the warmth drains out of the record
-   as the dial moves right. */
-.record[data-mode='designed'] {
-  background-color: color-mix(
-    in srgb,
-    var(--warm) calc(7% * (1 - var(--stay))),
-    transparent
-  );
-}
-
-/* Every record hangs off the same left rail: the file number sits in the
-   margin and the whole record aligns to the name. That repetition down the
-   page is what makes the archive read as filed rather than stacked. */
-.record {
-  --rail: clamp(2.75rem, 5vw, 4.5rem);
-  --rail-gap: clamp(1rem, 3vw, 2.5rem);
-}
-
-.record__head {
-  display: grid;
-  grid-template-columns: var(--rail) 1fr auto;
-  align-items: start;
-  gap: var(--rail-gap);
-}
-
-.record__index {
-  margin: 0;
-  font-family: var(--display);
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
-  font-weight: 500;
-  line-height: 1;
-  color: var(--rule);
-  font-variant-numeric: tabular-nums;
-}
-
-.record__kicker {
-  margin: 0 0 0.5rem;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--ink-45);
-}
-
-.record__name {
-  margin: 0;
-  font-family: var(--display);
-  font-weight: 700;
-  line-height: 0.88;
-  letter-spacing: -0.015em;
-  text-transform: uppercase;
-}
-
-.record__breed {
-  margin: 0.7rem 0 0;
-  font-size: 0.8125rem;
-  letter-spacing: 0.02em;
-  color: var(--ink-60);
-}
-
-/* ON AIR — the only place red is allowed. Invisible until it is true. */
-.record__air {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0.4rem 0 0;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--on-air);
-  opacity: 0;
-  transition: opacity 260ms ease;
-}
-
-.record.is-playing .record__air {
-  opacity: 1;
-}
-
-.record__air-dot {
-  width: 0.5rem;
-  height: 0.5rem;
+  padding: 1.1rem 0.6rem;
+  width: 7.5rem;
+  height: 7.5rem;
+  border: 1px solid var(--rule);
   border-radius: 50%;
-  background: var(--on-air);
+  color: var(--muted);
+  font-size: 0.5625rem;
+  letter-spacing: 0.2em;
+  line-height: 1.9;
+  text-align: center;
+  text-transform: uppercase;
+  opacity: 0.75;
 }
 
-.record.is-playing .record__air-dot {
-  animation: air-pulse 1.7s ease-in-out infinite;
+.intro__stamp span {
+  display: block;
 }
 
-@keyframes air-pulse {
-  50% {
-    opacity: 0.35;
+@media (min-width: 64rem) {
+  .intro {
+    grid-template-columns: auto minmax(14rem, 18rem) minmax(0, 1fr) auto;
+    align-items: start;
+    gap: var(--s-4);
+    padding-top: var(--s-5);
+  }
+
+  .intro__stamp {
+    display: block;
   }
 }
 
-/* ── the listing ── */
+/* ══ THE DECK ═════════════════════════════════════════════════════════════ */
+
+.stage {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 0 var(--gutter) var(--s-4);
+}
+
+.deck {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-3) 0 0;
+}
+
+.deck__cards {
+  position: relative;
+  justify-self: center;
+  width: var(--card-w);
+  /* The stack needs room beneath for the cards behind the active one. */
+  padding-bottom: 1.75rem;
+}
+
+/* ── the card ── */
+
+.card {
+  --drag: 0px;
+  --tilt: 0deg;
+  --stay: 0;
+  padding: clamp(1.4rem, 3.2vw, 2.75rem);
+  background: var(--paper);
+  border-radius: var(--card-radius);
+  box-shadow:
+    0 1px 1px rgba(37, 33, 29, 0.07),
+    0 10px 24px -12px rgba(37, 33, 29, 0.3);
+  transition:
+    transform 420ms cubic-bezier(0.22, 0.75, 0.2, 1),
+    opacity 320ms ease,
+    background-color 520ms ease;
+}
+
+/* Cards behind the active one: only the top edge shows. */
+.card:not(.is-active) {
+  position: absolute;
+  inset: 0 0 auto;
+  pointer-events: none;
+}
+
+.card.is-active {
+  position: relative;
+  z-index: 5;
+}
+
+.card[data-offset='0'] {
+  transform: translateX(var(--drag)) rotate(var(--tilt));
+}
+
+.card[data-offset='1'] {
+  transform: translateY(0.7rem) scale(0.983);
+  opacity: 1;
+  z-index: 4;
+}
+
+.card[data-offset='2'] {
+  transform: translateY(1.35rem) scale(0.966);
+  opacity: 1;
+  z-index: 3;
+}
+
+.card[data-offset='3'] {
+  transform: translateY(1.9rem) scale(0.951);
+  opacity: 1;
+  z-index: 2;
+}
+
+/* Everything further back, and everything already seen, is out of the way. */
+.card[data-offset='4'],
+.card[data-offset='5'],
+.card[data-offset='6'],
+.card[data-offset='7'] {
+  transform: translateY(2.3rem) scale(0.94);
+  opacity: 0;
+  z-index: 1;
+}
+
+.card[data-offset^='-'] {
+  transform: translateX(-58%) rotate(-3deg);
+  opacity: 0;
+  z-index: 0;
+}
+
+.deck__cards.is-dragging .card {
+  transition: none;
+}
+
+/* Designed mode warms the paper. A shift in the stock, never a wash. */
+.card[data-mode='designed'] {
+  background-color: color-mix(in srgb, var(--warm) calc(13% * (1 - var(--stay))), var(--paper));
+}
+
+/* ── card head ── */
+
+.card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.card__count b {
+  font-weight: 600;
+  color: var(--on-air);
+}
+
+.card__source {
+  margin: 0;
+  text-align: right;
+  color: var(--ink);
+}
+
+.card__name {
+  margin: clamp(0.6rem, 1.6vw, 1.1rem) 0 0;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(3.25rem, 11vw, 6.5rem);
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  overflow-wrap: break-word;
+}
+
+.card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin: clamp(0.6rem, 1.4vw, 0.9rem) 0 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.card__meta span + span::before {
+  content: '·';
+  margin-right: 0.9rem;
+  color: var(--rule);
+}
+
+.card__rule {
+  margin: var(--s-2) 0 var(--s-3);
+  border: 0;
+  border-top: 1px solid var(--rule);
+}
+
+/* ── the listing: the reason the page exists, so it is set to be read ── */
 
 .listing {
   margin: 0;
-  font-weight: 300;
-  letter-spacing: -0.005em;
-  hyphens: none;
+  font-size: clamp(1rem, 1.35vw, 1.125rem);
+  font-weight: 400;
+  line-height: 1.85;
 }
 
-.record__reading .label {
-  padding-bottom: 0.6rem;
-  border-bottom: 1px solid var(--hairline);
-}
-
-/* Sentences the shelter reused. Marked, never reworded. */
 .thread {
   box-shadow: inset 0 -1px 0 var(--rule);
 }
 
-.record[data-mode='designed'] .thread {
-  box-shadow: inset 0 -1px 0 var(--ink-45);
-}
-
-.attribution {
-  margin: var(--space-m) 0 0;
-  font-size: 0.75rem;
-  line-height: 1.7;
-  color: var(--ink-45);
-}
-
-.attribution__flag {
-  display: block;
-  margin-top: 0.35rem;
-}
-
-/* ── the echo: shared-sentence records point at one another ── */
+/* ── the template, made visible ── */
 
 .echo {
-  margin-top: var(--space-m);
-  padding-top: var(--space-s);
-  border-top: 1px solid var(--hairline);
+  margin: var(--s-3) 0 0;
+  padding: var(--s-2);
+  border-left: 3px solid var(--warm);
+  background: color-mix(in srgb, var(--rule) 14%, transparent);
 }
 
-.echo__list {
+.echo__label,
+.echo__names {
   margin: 0;
-  padding: 0;
-  list-style: none;
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
-.echo__list button {
+.echo__quote {
+  margin: 0.5rem 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.echo__names {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.35rem 0.9rem;
-  width: 100%;
-  padding: 0.55rem 0;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.echo__names b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.echo__names button {
+  padding: 0;
   border: 0;
-  border-bottom: 1px solid var(--hairline);
   background: none;
-  color: inherit;
+  color: var(--muted);
   font: inherit;
-  text-align: left;
+  letter-spacing: inherit;
+  text-transform: inherit;
   cursor: pointer;
 }
 
-.echo__list button:hover .echo__name,
-.echo__list button:focus-visible .echo__name {
+.echo__names button:hover {
+  color: var(--ink);
   text-decoration: underline;
-  text-underline-offset: 0.25em;
+  text-underline-offset: 0.3em;
 }
 
-.echo__name {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  min-width: 7rem;
+.echo__names span {
+  color: var(--rule);
 }
 
-.echo__line {
-  flex: 1;
-  font-size: 0.8125rem;
-  font-weight: 300;
-  font-style: italic;
-  color: var(--ink-60);
-}
-
-/* ── apparatus: the instruments beside the document ── */
-
-.voicetest__modes {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border: 1px solid var(--ink);
-}
-
-.mode {
-  padding: 0.85rem 0.7rem;
+/* A tear-off perforation between the record and its apparatus. */
+.card__perf {
+  margin: var(--s-3) 0;
   border: 0;
-  background: none;
-  color: var(--ink-60);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  transition: background-color 220ms ease, color 220ms ease;
+  border-top: 1px dashed var(--rule);
 }
 
-.mode + .mode {
-  border-left: 1px solid var(--ink);
+/* ══ VOICE ════════════════════════════════════════════════════════════════ */
+
+.voice__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
 }
 
-.mode__name {
-  display: block;
-  font-size: 0.8125rem;
-  font-weight: 600;
+.voice__title {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
-.mode__gloss {
-  display: block;
-  margin-top: 0.2rem;
+/* The only red on the page, and only while sound is actually coming out. */
+.onair {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
   font-size: 0.6875rem;
-  font-weight: 300;
-  color: var(--ink-45);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--on-air);
+  opacity: 0;
+  transition: opacity 240ms ease;
 }
 
-.mode.is-on {
+.card.is-playing .onair {
+  opacity: 1;
+}
+
+.onair__dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--on-air);
+}
+
+.card.is-playing .onair__dot {
+  animation: air 1.8s ease-in-out infinite;
+}
+
+@keyframes air {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.voice__note {
+  margin: 0.5rem 0 var(--s-2);
+  max-width: 52ch;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+/* ── the switch: one bar, two halves, a knob on the seam ── */
+
+.switch {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--ink);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.switch__half {
+  padding: 0.85rem 1rem;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 320ms ease, color 320ms ease;
+}
+
+.switch__half--designed {
+  text-align: right;
+}
+
+.switch__name {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.switch__gloss {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.6875rem;
+  font-weight: 300;
+}
+
+.switch__half--flat.is-on {
   background: var(--ink);
   color: var(--paper);
 }
 
-.mode.is-on .mode__gloss {
-  color: color-mix(in srgb, var(--paper) 70%, var(--ink));
-}
-
-/* Designed, and playing: the active chip picks up the warmth. */
-.record[data-mode='designed'].is-playing .mode.is-on[data-mode='designed'] {
-  background: color-mix(in srgb, var(--warm) 88%, var(--ink));
+.switch__half--designed.is-on {
+  background: var(--warm);
   color: var(--ink);
 }
 
-.record[data-mode='designed'].is-playing .mode.is-on[data-mode='designed'] .mode__gloss {
-  color: color-mix(in srgb, var(--ink) 65%, var(--warm));
+/* The knob sits on the seam like a physical detent. */
+.switch__knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: -0.575rem 0 0 -0.575rem;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 6px var(--ink);
+  pointer-events: none;
+  z-index: 2;
 }
 
-.transport {
+/* ── player ── */
+
+.player {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-top: 0.9rem;
+  gap: var(--s-2);
+  margin-top: var(--s-2);
 }
 
-.play {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.55rem 1rem 0.55rem 0.8rem;
+.player__play {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
   border: 1px solid var(--ink);
-  background: none;
+  border-radius: 50%;
+  background: transparent;
   color: var(--ink);
-  font: inherit;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
   cursor: pointer;
   transition: background-color 200ms ease, color 200ms ease;
 }
 
-.play:hover {
+.player__play:hover {
   background: var(--ink);
   color: var(--paper);
 }
 
-.play__glyph {
+.player__glyph {
   width: 0;
   height: 0;
-  border-left: 0.55rem solid currentColor;
-  border-top: 0.35rem solid transparent;
-  border-bottom: 0.35rem solid transparent;
+  margin-left: 0.15rem;
+  border-left: 0.6rem solid currentColor;
+  border-top: 0.38rem solid transparent;
+  border-bottom: 0.38rem solid transparent;
 }
 
-.play.is-playing .play__glyph {
-  width: 0.5rem;
+.player__play.is-playing .player__glyph {
+  width: 0.55rem;
   height: 0.7rem;
+  margin-left: 0;
   border: 0;
   background: currentColor;
-  box-shadow: inset 0 0 0 0.14rem var(--paper);
+  box-shadow: inset 0 0 0 0.15rem var(--paper);
 }
 
-.play.is-playing:hover .play__glyph {
-  box-shadow: inset 0 0 0 0.14rem var(--ink);
+.player__play.is-playing:hover .player__glyph {
+  box-shadow: inset 0 0 0 0.15rem var(--ink);
 }
 
-.clock {
+/* The waveform is a progress indicator drawn in the document's language. */
+.wave {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  height: 2.25rem;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.wave span {
+  flex: 1;
+  min-width: 0;
+  background: var(--ink);
+}
+
+.wave__mask {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  pointer-events: none;
+  transition: width 180ms linear;
+}
+
+.card[data-mode='designed'] .wave span {
+  background: color-mix(in srgb, var(--ink) 78%, var(--warm));
+}
+
+.player__time {
+  flex: none;
+  margin: 0;
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.08em;
-  color: var(--ink-45);
+  letter-spacing: 0.06em;
+  color: var(--muted);
 }
 
-/* ── facts: administrative, deliberately quiet ── */
-
-.facts {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0;
-  margin: var(--space-m) 0 0;
-  border-top: 1px solid var(--hairline);
+.player__time b {
+  font-weight: 500;
+  color: var(--ink);
 }
 
-.facts div {
-  padding: 0.6rem 0.75rem 0.6rem 0;
-  border-bottom: 1px solid var(--hairline);
+/* ══ THE STAY DIAL (hero only) ════════════════════════════════════════════ */
+
+.dial {
+  margin-top: var(--s-3);
+  padding-top: var(--s-2);
+  border-top: 1px solid var(--rule);
 }
 
-.facts dt {
-  font-size: 0.625rem;
+.dial__label {
+  margin: 0 0 0.4rem;
+  font-size: 0.6875rem;
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--ink-45);
+  color: var(--muted);
 }
 
-.facts dd {
+.dial__label code {
+  font-size: inherit;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--ink);
+}
+
+.dial__track {
+  --pos: 0;
+  --inset: 0.6rem;
+  position: relative;
+  height: 2.75rem;
+}
+
+.dial__rule,
+.dial__marks,
+.dial__marker {
+  pointer-events: none;
+}
+
+.dial__rule {
+  position: absolute;
+  top: 1.35rem;
+  left: var(--inset);
+  right: var(--inset);
+  height: 1px;
+  background: var(--ink);
+}
+
+.dial__marks {
+  position: absolute;
+  top: 0.7rem;
+  left: var(--inset);
+  right: var(--inset);
+  display: flex;
+  justify-content: space-between;
+}
+
+.dial__marks span {
+  width: 1px;
+  height: 1.3rem;
+  background: var(--ink);
+}
+
+.dial__marker {
+  position: absolute;
+  top: 0.75rem;
+  left: calc(var(--inset) + (100% - 2 * var(--inset)) * var(--pos) / (var(--stops) - 1));
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-left: calc(var(--inset) * -1);
+  background: var(--ink);
+  border-radius: 2px;
+  transition: left 340ms cubic-bezier(0.22, 0.75, 0.2, 1);
+}
+
+.card[data-mode='designed'] .dial__marker {
+  background: color-mix(in srgb, var(--warm) calc(100% * (1 - var(--stay))), var(--ink));
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+.dial__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.dial__track:has(.dial__input:focus-visible) .dial__marker {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.dial__stops {
+  display: flex;
+  justify-content: space-between;
   margin: 0.2rem 0 0;
-  font-size: 0.8125rem;
+  padding: 0;
+  list-style: none;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
-/* ── derivation ── */
+.dial__stop {
+  flex: 1;
+  text-align: center;
+}
+
+.dial__stop:first-child {
+  text-align: left;
+}
+
+.dial__stop:last-child {
+  text-align: right;
+}
+
+.dial__stop em {
+  display: block;
+  margin-top: 0.1rem;
+  font-style: normal;
+  color: var(--rule);
+}
+
+.dial__stop.is-on {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.dial__prompt {
+  margin: var(--s-2) 0 0;
+}
+
+.dial__prompt-label {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.dial__prompt code {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.dial__prompt code.is-fresh {
+  animation: fresh 900ms ease-out;
+}
+
+@keyframes fresh {
+  from {
+    background: var(--warm);
+  }
+  to {
+    background: transparent;
+  }
+}
+
+.dial__caveat {
+  margin: var(--s-1) 0 0;
+  font-size: 0.75rem;
+  font-style: italic;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+/* ══ DERIVATION ═══════════════════════════════════════════════════════════ */
 
 .derivation {
-  margin-top: var(--space-m);
-  border-top: 1px solid var(--hairline);
+  margin-top: var(--s-3);
+  border-top: 1px solid var(--rule);
 }
 
 .derivation summary {
-  padding: 0.8rem 0;
+  padding: 0.75rem 0;
   font-size: 0.6875rem;
   font-weight: 500;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--ink-45);
+  color: var(--muted);
   cursor: pointer;
   list-style: none;
 }
@@ -657,27 +913,23 @@ a:hover {
 
 .rules th,
 .rules td {
-  padding: 0.45rem 0.6rem 0.45rem 0;
-  border-bottom: 1px solid var(--hairline);
+  padding: 0.4rem 0.6rem 0.4rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--rule) 55%, transparent);
   vertical-align: top;
   font-weight: 400;
 }
 
 .rules tbody th {
-  width: 6.5rem;
+  width: 6rem;
   font-size: 0.625rem;
   font-weight: 600;
-  letter-spacing: 0.14em;
-  color: var(--ink-45);
+  letter-spacing: 0.12em;
+  color: var(--muted);
   white-space: nowrap;
 }
 
-.rules td b {
-  font-weight: 600;
-}
-
 .rules .is-quiet {
-  color: var(--ink-45);
+  color: var(--muted);
 }
 
 .rules i {
@@ -685,402 +937,266 @@ a:hover {
 }
 
 .derivation__out {
-  margin: var(--space-s) 0 var(--space-m);
+  margin: var(--s-2) 0;
+}
+
+.derivation__out span {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .derivation__out code {
-  display: block;
-  margin-top: 0.3rem;
-  font-size: 0.8125rem;
-  line-height: 1.65;
+  font-size: 0.875rem;
+  line-height: 1.6;
   overflow-wrap: anywhere;
 }
 
-/* ══ FEATURED RECORD ══════════════════════════════════════════════════════
-   A specimen sheet. Different composition from the archive, not a bigger
-   version of it: the name runs to the full measure, the listing is set at
-   reading size, and the instruments sit in their own ruled column. */
-
-.featured {
-  max-width: var(--page);
-  margin: 0 auto;
-  padding: 0 var(--gutter);
-}
-
-.record--hero {
-  padding: var(--space-l) 0 var(--space-xl);
-  border-bottom: 3px solid var(--ink);
-}
-
-.record--hero .record__head {
-  padding-bottom: var(--space-m);
-  border-bottom: 1px solid var(--ink);
-}
-
-.record--hero .record__index {
-  font-size: clamp(2rem, 4vw, 3rem);
-}
-
-.record--hero .record__name {
-  font-size: clamp(4rem, 16vw, 13rem);
-}
-
-.record--hero .record__breed {
-  font-size: 0.875rem;
-}
-
-.record--hero .record__body {
-  display: grid;
-  gap: var(--space-l);
-  padding-top: var(--space-l);
-}
-
-.record--hero .listing {
-  font-size: clamp(1.125rem, 2vw, 1.5rem);
-  line-height: 1.75;
-}
-
-@media (min-width: 60rem) {
-  .record--hero .record__body {
-    grid-template-columns: minmax(0, 1.15fr) minmax(21rem, 0.85fr);
-    gap: var(--space-l);
-    margin-left: calc(var(--rail) + var(--rail-gap));
-  }
-
-  .record--hero .record__apparatus {
-    padding-left: var(--space-m);
-    border-left: 1px solid var(--ink);
-  }
-}
-
-/* ── the stay dial ── */
-
-.dial {
-  margin-top: var(--space-m);
-  padding-top: var(--space-m);
-  border-top: 1px solid var(--hairline);
-}
-
-.dial__track {
-  --pos: 0;
-  --inset: 0.65rem; /* half the marker, so it never hangs off either end */
-  position: relative;
-  height: 3.25rem;
-  margin-top: 0.5rem;
-}
-
-.dial__rule,
-.dial__marks,
-.dial__marker {
-  pointer-events: none; /* the real input sits on top and must receive the drag */
-}
-
-.dial__rule {
-  position: absolute;
-  top: 1.5rem;
-  left: var(--inset);
-  right: var(--inset);
-  height: 1px;
-  background: var(--ink);
-}
-
-/* Four struck stops on the rule — the instrument's graduations. */
-.dial__marks {
-  position: absolute;
-  top: 0.75rem;
-  left: var(--inset);
-  right: var(--inset);
-  display: flex;
-  justify-content: space-between;
-}
-
-.dial__marks span {
-  width: 1px;
-  height: 1.5rem;
-  background: var(--ink);
-}
-
-/* The travelling marker. A struck square, not a pill. */
-.dial__marker {
-  position: absolute;
-  top: 0.85rem;
-  left: calc(
-    var(--inset) + (100% - 2 * var(--inset)) * var(--pos) / (var(--stops) - 1)
-  );
-  width: 1.3rem;
-  height: 1.3rem;
-  margin-left: calc(var(--inset) * -1);
-  background: var(--ink);
-  transition: left 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.record[data-mode='designed'] .dial__marker {
-  background: color-mix(in srgb, var(--warm) calc(100% * (1 - var(--stay))), var(--ink));
-  box-shadow: 0 0 0 1px var(--ink);
-}
-
-/* The real control, invisible, sitting exactly over the drawn one. */
-.dial__input {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.dial__track:has(.dial__input:focus-visible) .dial__marker {
-  outline: 2px solid var(--ink);
-  outline-offset: 3px;
-}
-
-.dial__stops {
-  display: flex;
-  justify-content: space-between;
-  margin: 0.35rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.dial__stop {
-  flex: 1;
-  text-align: center;
-  color: var(--ink-45);
-  transition: color 220ms ease;
-}
-
-.dial__stop:first-child {
-  text-align: left;
-}
-
-.dial__stop:last-child {
-  text-align: right;
-}
-
-.dial__stop-label {
-  display: block;
+.card__origin {
+  margin: var(--s-2) 0 0;
+  padding-top: var(--s-2);
+  border-top: 1px solid var(--rule);
   font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+/* ══ DECK FURNITURE ═══════════════════════════════════════════════════════ */
+
+.arrow {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 200ms ease, color 200ms ease, opacity 200ms ease;
+}
+
+.arrow:hover:not(:disabled) {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.arrow:disabled {
+  opacity: 0.28;
+  cursor: default;
+}
+
+.deck__hint {
+  margin: var(--s-3) 0 0;
+  text-align: center;
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+  color: var(--muted);
 }
 
-.dial__stop-days {
-  display: block;
-  margin-top: 0.15rem;
-  font-size: 0.625rem;
-  font-variant-numeric: tabular-nums;
-  color: var(--rule);
+.deck__hint-glyph {
+  margin-right: 0.4rem;
 }
 
-.dial__stop.is-on {
+/* ── index: file tabs along the bottom of the deck ── */
+
+.index {
+  display: flex;
+  gap: 2px;
+  margin-top: var(--s-3);
+  padding-bottom: 2px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.index__item {
+  flex: 1 0 auto;
+  min-width: 7rem;
+  padding: 0.7rem 0.9rem 0.8rem;
+  border: 0;
+  border-top: 2px solid transparent;
+  border-radius: 4px 4px 0 0;
+  background: color-mix(in srgb, var(--paper) 55%, transparent);
+  color: var(--muted);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 220ms ease, color 220ms ease;
+}
+
+.index__item:hover {
+  background: color-mix(in srgb, var(--paper) 80%, transparent);
   color: var(--ink);
 }
 
-.dial__stop.is-on .dial__stop-label {
-  font-weight: 700;
-}
-
-.dial__caveat {
-  margin: var(--space-s) 0 0;
-  font-size: 0.75rem;
-  font-style: italic;
-  line-height: 1.7;
-  color: var(--ink-45);
-}
-
-.dial__prompt {
-  margin-top: var(--space-s);
-  padding-top: var(--space-s);
-  border-top: 1px solid var(--hairline);
-}
-
-.dial__prompt-text {
+.index__n {
   display: block;
-  margin-top: 0.2rem;
-  font-size: 0.9375rem;
-  line-height: 1.65;
-  overflow-wrap: anywhere;
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
 }
 
-.dial__prompt-text.is-fresh {
-  animation: prompt-refresh 900ms ease-out;
-}
-
-@keyframes prompt-refresh {
-  from {
-    background: var(--warm);
-  }
-  to {
-    background: transparent;
-  }
-}
-
-/* ══ ARCHIVE ══════════════════════════════════════════════════════════════
-   Records filed in sequence. Lighter than the hero, ruled off from one
-   another, with the listing given the width and the instruments held to a
-   narrow column at the right. */
-
-.archive {
-  max-width: var(--page);
-  margin: 0 auto;
-  padding: var(--space-xl) var(--gutter) var(--space-l);
-}
-
-.archive__head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-bottom: var(--space-s);
-  border-bottom: 1px solid var(--ink);
-}
-
-.archive__title {
-  margin: 0;
-  font-family: var(--display);
-  font-size: clamp(1.75rem, 4vw, 3rem);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+.index__name {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
-.archive__note {
-  margin: 0;
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  color: var(--ink-45);
+.index__item.is-on {
+  background: var(--paper);
+  border-top-color: var(--on-air);
+  color: var(--ink);
 }
 
-.shelf > .record {
-  padding: var(--space-l) 0;
-  border-bottom: 1px solid var(--rule);
+.index__item.is-on .index__n {
+  color: var(--on-air);
 }
 
-.shelf > .record:last-child {
-  border-bottom: 0;
-}
+/* ══ ABOUT ════════════════════════════════════════════════════════════════ */
 
-.shelf .record__name {
-  font-size: clamp(2.5rem, 7vw, 4.75rem);
-}
-
-.shelf .record__body {
-  display: grid;
-  gap: var(--space-m);
-  padding-top: var(--space-m);
-}
-
-.shelf .listing {
-  font-size: 1.0625rem;
-  line-height: 1.8;
-  max-width: 46rem;
-}
-
-@media (min-width: 60rem) {
-  .shelf .record__body {
-    grid-template-columns: minmax(0, 1fr) minmax(17rem, 20rem);
-    gap: var(--space-l);
-    margin-left: calc(var(--rail) + var(--rail-gap));
-  }
-
-  .shelf .record__apparatus {
-    padding-left: var(--space-m);
-    border-left: 1px solid var(--hairline);
-  }
-
-  .shelf .facts {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-/* ══ COLOPHON ═════════════════════════════════════════════════════════════ */
-
-.colophon {
+.about {
   max-width: var(--page);
   margin: 0 auto;
-  padding: var(--space-l) var(--gutter) var(--space-xl);
-  border-top: 3px solid var(--ink);
+  padding: var(--s-4) var(--gutter) var(--s-5);
 }
 
-.colophon__grid {
+.about__grid {
   display: grid;
-  gap: var(--space-m);
+  gap: var(--s-3);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--rule);
 }
 
-@media (min-width: 60rem) {
-  .colophon__grid {
+@media (min-width: 56rem) {
+  .about__grid {
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-l);
+    gap: var(--s-4);
+  }
+
+  .about__col + .about__col {
+    padding-left: var(--s-3);
+    border-left: 1px solid var(--rule);
   }
 }
 
-.colophon__block h3 {
-  margin: 0 0 var(--space-s);
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--hairline);
+.about__col h2 {
+  margin: 0 0 var(--s-2);
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--ink-45);
+  color: var(--muted);
 }
 
-.colophon__block p {
+.about__col p {
   margin: 0 0 0.9rem;
   font-size: 0.8125rem;
-  font-weight: 300;
   line-height: 1.8;
-  color: var(--ink-60);
 }
 
-.colophon__block code {
-  font-size: 0.75rem;
-  color: var(--ink);
+.about__fine {
+  color: var(--muted);
 }
 
-.colophon__sig {
-  color: var(--ink-45) !important;
+.steps {
+  margin: 0 0 0.9rem;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+  line-height: 1.75;
+}
+
+.steps li {
+  display: grid;
+  grid-template-columns: 2.25rem 1fr;
+  gap: 0.5rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--rule) 50%, transparent);
+}
+
+.steps__n {
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  padding-top: 0.28rem;
+}
+
+.about__heart {
+  color: var(--on-air);
+  font-size: 1rem;
+}
+
+.about__foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: var(--s-4) 0 0;
+  padding-top: var(--s-2);
+  border-top: 1px solid var(--rule);
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 /* ══ SMALL SCREENS ════════════════════════════════════════════════════════
-   Recomposed, not shrunk: the instruments move under the listing, the facts
-   run full width, and the reading sizes hold. */
+   Recomposed: the card keeps the viewport, the arrows move under it. */
 
-@media (max-width: 60rem) {
-  .record__head {
-    grid-template-columns: auto 1fr;
+@media (max-width: 48rem) {
+  .deck {
+    grid-template-columns: 1fr;
+    gap: var(--s-2);
   }
 
-  .record__air {
-    grid-column: 2;
-    margin-top: 0.75rem;
+  .deck__cards {
+    order: -1;
+    width: 100%;
   }
 
-  .record__apparatus {
-    padding-top: var(--space-m);
+  .arrow {
+    display: none;
+  }
+
+  .card__head {
+    font-size: 0.6875rem;
+  }
+
+  .switch {
+    grid-template-columns: 1fr;
+  }
+
+  .switch__half--designed {
+    text-align: left;
     border-top: 1px solid var(--ink);
+  }
+
+  .switch__knob {
+    display: none;
+  }
+
+  .index__item {
+    min-width: 6rem;
   }
 }
 
 @media (max-width: 30rem) {
-  .voicetest__modes {
-    grid-template-columns: 1fr;
+  .player {
+    flex-wrap: wrap;
   }
 
-  .mode + .mode {
-    border-left: 0;
-    border-top: 1px solid var(--ink);
-  }
-
-  .finding__count {
-    text-align: left;
-  }
-
-  .facts {
-    grid-template-columns: 1fr;
+  .wave {
+    order: 3;
+    flex-basis: 100%;
   }
 }
 
@@ -1100,7 +1216,7 @@ a:hover {
   }
 
   /* The dot carries state, so it stays lit rather than animating away. */
-  .record.is-playing .record__air-dot {
+  .card.is-playing .onair__dot {
     animation: none;
   }
 }
