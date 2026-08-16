@@ -1,6 +1,6 @@
 import { AudioBus, formatTime } from './audioBus.js';
 import { derive, buildVoicePrompt } from './voicePrompt.js';
-import { findSharedSentences } from './sharedText.js';
+import { findSharedSentences, sentences } from './sharedText.js';
 
 const DATA_URL = 'data/dogs.json';
 
@@ -10,10 +10,12 @@ const state = {
   mode: 'flat', // 'flat' | 'designed'
   heroStop: 0, // index into the hero's timeline
   shared: new Map(), // dogId -> [{ sentence, others }]
+  sharedSet: new Set(), // every sentence that appears in more than one listing
 };
 
 const bus = new AudioBus(document.getElementById('stage'));
 const shelf = document.getElementById('shelf');
+const featured = document.getElementById('featured');
 const cards = new Map();
 const byId = new Map();
 
@@ -27,194 +29,224 @@ async function boot() {
   for (const dog of state.dogs) byId.set(dog.id, dog);
 
   // Derived from the listings themselves — see src/sharedText.js.
-  state.shared = findSharedSentences(state.dogs).byDog;
+  const { groups, byDog } = findSharedSentences(state.dogs);
+  state.shared = byDog;
+  state.sharedSet = new Set(groups.map((g) => g.sentence));
 
-  for (const dog of state.dogs) shelf.append(renderCard(dog));
+  renderFinding(groups);
 
-  // The hero card opens at stop 0, so its derivation and tick must agree.
   const hero = state.dogs.find((d) => d.hero);
-  if (hero) updateStay(hero, 0);
+  const rest = state.dogs.filter((d) => !d.hero);
+
+  if (hero) {
+    featured.append(renderRecord(hero, 1));
+    updateStay(hero, 0);
+  }
+  rest.forEach((dog, i) => shelf.append(renderRecord(dog, i + 2)));
 
   bus.subscribe(syncTransport);
 }
 
-/** Which file should be playing, given the current dog / mode / hero day. */
-function sourceFor(dog, mode = state.mode, stopIndex = state.heroStop) {
-  if (dog.hero && mode === 'designed' && dog.timeline?.[stopIndex]) {
-    return dog.timeline[stopIndex].audio;
+/* ─── the finding ─────────────────────────────────────────────────────────
+   The headline of the whole piece: the shelters write from a template, and
+   the page proves it from the listings rather than asserting it. */
+
+function renderFinding(groups) {
+  const target = document.querySelector('.finding__body');
+  if (!groups.length) {
+    target.closest('.finding').hidden = true;
+    return;
   }
-  return dog.audio[mode];
+
+  const [top] = groups;
+  const names = top.dogIds.map((id) => byId.get(id).name);
+  const others = groups.length - 1;
+
+  target.innerHTML = `
+    <blockquote class="finding__quote">${esc(top.sentence)}</blockquote>
+    <div class="finding__attrib">
+      <p class="finding__names">${names.map((n) => `<span>${esc(n)}</span>`).join('')}</p>
+      <p class="finding__count">
+        <b>One sentence.</b><br />${numberWord(names.length)} dogs.
+      </p>
+    </div>
+    <p class="finding__gloss">
+      The shelters write from a template. This sentence appears in ${numberWord(names.length)} of the
+      eight listings, word for word${others > 0 ? `, and ${others} further sentence${others > 1 ? 's are' : ' is'} shared across other records` : ''}.
+      The paperwork cannot tell these animals apart. The voices can.
+    </p>
+  `;
 }
 
-function renderCard(dog) {
-  const card = document.createElement('article');
-  card.className = dog.hero ? 'card is-hero' : 'card';
-  card.dataset.dogId = dog.id;
-  card.dataset.mode = 'flat';
+/* ─── records ─────────────────────────────────────────────────────────────
+   One renderer, two compositions. The hero is a specimen sheet; the rest are
+   filed records — lighter, numbered, ruled off from one another. */
+
+function renderRecord(dog, index) {
+  const el = document.createElement('article');
+  el.className = dog.hero ? 'record record--hero' : 'record';
+  el.dataset.dogId = dog.id;
+  el.dataset.mode = 'flat';
+  el.style.setProperty('--stay', '0');
 
   const a = dog.attributes;
-  const panelId = `derivation-${dog.id}`;
+  const n = String(index).padStart(2, '0');
 
-  card.innerHTML = `
-    <header class="strip">
-      <span class="strip__stamp">INTAKE RECORD</span>
-      <span class="strip__meta">${esc(a.breed)}</span>
-      <span class="strip__live">ON AIR</span>
-      <span class="on-air" aria-hidden="true"></span>
+  el.innerHTML = `
+    <header class="record__head">
+      <p class="record__index" aria-hidden="true">${n}</p>
+      <div class="record__title">
+        <p class="record__kicker">${dog.hero ? 'Featured record' : `Record ${n}`}</p>
+        <h${dog.hero ? '2' : '3'} class="record__name">${esc(dog.name)}</h${dog.hero ? '2' : '3'}>
+        <p class="record__breed">${esc(a.breed)}</p>
+      </div>
+      <p class="record__air"><span class="record__air-dot" aria-hidden="true"></span><span class="record__air-word">On air</span></p>
     </header>
 
-    <h2 class="card__name">${esc(dog.name)}</h2>
-
-    <dl class="facts">
-      <div><dt>Age</dt><dd>${esc(a.age_band)}${a.age_years == null ? '' : ` · ${formatAge(a.age_years)}`}</dd></div>
-      <div><dt>Sex</dt><dd>${esc(a.sex ?? 'unknown')}</dd></div>
-      <div><dt>Size</dt><dd>${esc(a.size)}</dd></div>
-      <div><dt>Intake</dt><dd>${esc(String(a.intake_type).replace(/_/g, ' '))}</dd></div>
-      <div><dt>Returns</dt><dd>${a.return_count}</dd></div>
-      <div class="facts__days"><dt>Days in shelter</dt><dd>${esc(a.days_in_shelter)}</dd></div>
-    </dl>
-
-    <blockquote class="listing">${esc(dog.listing_text)}</blockquote>
-    <p class="attribution">
-      Verbatim from <a href="${esc(dog.source.url)}" target="_blank" rel="noopener noreferrer">${esc(dog.source.shelter)}</a>, captured ${esc(dog.source.captured)}. Not one word is ours.
-      ${a.medical_note ? `<span class="attribution__flag">Medical: ${esc(a.medical_note)}</span>` : ''}
-      ${dog.shelter_note ? `<span class="attribution__flag">${esc(dog.shelter_note)}</span>` : ''}
-    </p>
-
-    ${renderShared(dog)}
-    ${dog.hero ? renderSlider(dog) : ''}
-
-    <div class="controls">
-      <button class="btn btn--play" type="button" data-action="play">Play</button>
-      <div class="modes" role="group" aria-label="Reading">
-        <button class="btn btn--mode is-on" type="button" data-action="mode" data-mode="flat" aria-pressed="true">Flat</button>
-        <button class="btn btn--mode" type="button" data-action="mode" data-mode="designed" aria-pressed="false">Designed</button>
+    <div class="record__body">
+      <div class="record__reading">
+        <p class="label">Shelter listing</p>
+        <blockquote class="listing">${renderListing(dog)}</blockquote>
+        <p class="attribution">
+          Verbatim from <a href="${esc(dog.source.url)}" target="_blank" rel="noopener noreferrer">${esc(dog.source.shelter)}</a>, captured ${esc(dog.source.captured)}.
+          ${a.medical_note ? `<span class="attribution__flag">Medical — ${esc(a.medical_note)}</span>` : ''}
+          ${dog.shelter_note ? `<span class="attribution__flag">${esc(dog.shelter_note)}</span>` : ''}
+        </p>
+        ${renderThread(dog)}
       </div>
-      <span class="clock" aria-live="off">00:00 / 00:00</span>
+
+      <div class="record__apparatus">
+        <div class="voicetest">
+          <p class="label">Voice test</p>
+          <div class="voicetest__modes" role="group" aria-label="Reading">
+            <button class="mode is-on" type="button" data-action="mode" data-mode="flat" aria-pressed="true">
+              <span class="mode__name">Flat</span>
+              <span class="mode__gloss">stock voice</span>
+            </button>
+            <button class="mode" type="button" data-action="mode" data-mode="designed" aria-pressed="false">
+              <span class="mode__name">Designed</span>
+              <span class="mode__gloss">from the record</span>
+            </button>
+          </div>
+          <div class="transport">
+            <button class="play" type="button" data-action="play">
+              <span class="play__glyph" aria-hidden="true"></span><span class="play__word">Play</span>
+            </button>
+            <span class="clock">00:00 / 00:00</span>
+          </div>
+        </div>
+
+        ${dog.hero ? renderDial(dog) : ''}
+
+        <dl class="facts">
+          ${fact('Age', `${a.age_band}${a.age_years == null ? '' : ` · ${formatAge(a.age_years)}`}`)}
+          ${fact('Sex', a.sex ?? 'unknown')}
+          ${fact('Size', a.size)}
+          ${fact('Intake', String(a.intake_type).replace(/_/g, ' '))}
+          ${fact('Returns', a.return_count)}
+          ${fact('Days in shelter', a.days_in_shelter)}
+        </dl>
+
+        <details class="derivation"${dog.hero ? ' open' : ''}>
+          <summary><span>How this voice was derived</span></summary>
+          <div class="derivation__panel">${renderDerivation(a)}</div>
+        </details>
+      </div>
     </div>
-
-    <p class="src-readout" hidden><span class="src-readout__label">now playing</span> <code></code></p>
-
-    <details class="derivation"${dog.hero ? ' open' : ''}>
-      <summary aria-controls="${panelId}">How this voice was derived</summary>
-      <div id="${panelId}">${renderDerivation(a)}</div>
-    </details>
   `;
 
-  const playBtn = card.querySelector('[data-action="play"]');
-  const modeBtns = [...card.querySelectorAll('[data-action="mode"]')];
+  wireRecord(el, dog);
+  cards.set(dog.id, { el, dog });
+  return el;
+}
 
-  playBtn.addEventListener('click', () => {
-    if (state.currentDogId !== dog.id) selectDog(dog);
-    bus.toggle();
-  });
-
-  for (const btn of modeBtns) {
-    btn.addEventListener('click', () => {
-      const mode = btn.dataset.mode;
-      if (state.currentDogId !== dog.id) {
-        selectDog(dog, mode);
-        return;
-      }
-      if (state.mode === mode) return;
-      state.mode = mode;
-      // The sentence is the same in both readings, so hold the playhead.
-      bus.swapSource(sourceFor(dog));
-      syncTransport();
-    });
-  }
-
-  // Jump to another dog whose listing contains the same sentence.
-  for (const btn of card.querySelectorAll('[data-action="compare"]')) {
-    btn.addEventListener('click', () => {
-      const target = byId.get(btn.dataset.target);
-      selectDog(target, 'designed');
-      bus.play();
-      cards.get(target.id).el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    });
-  }
-
-  const slider = card.querySelector('[data-action="stay"]');
-  if (slider) {
-    slider.addEventListener('input', () => {
-      const index = Number(slider.value);
-      if (index === state.heroStop && state.currentDogId === dog.id) return;
-
-      const stop = dog.timeline[index];
-      state.heroStop = index;
-      slider.setAttribute('aria-valuetext', `${stop.label}, ${stop.days} days`);
-
-      if (state.currentDogId !== dog.id) {
-        // Land straight in designed mode — flat has no timeline to move along.
-        selectDog(dog, 'designed');
-        slider.value = String(index);
-        state.heroStop = index;
-        bus.load(sourceFor(dog));
-      } else if (state.mode === 'designed') {
-        // Same words, later in the stay: hold the playhead so the voice ages
-        // mid-sentence rather than restarting.
-        bus.swapSource(sourceFor(dog));
-      }
-      updateStay(dog, index);
-      syncTransport();
-    });
-  }
-
-  cards.set(dog.id, { el: card, dog, playBtn, modeBtns });
-  return card;
+function fact(term, value) {
+  return `<div><dt>${esc(term)}</dt><dd>${esc(value)}</dd></div>`;
 }
 
 /**
- * Shared-text callout. The shelter wrote this sentence once and dropped it into
- * several records; hearing two dogs read it in different voices is the whole
- * argument in ten seconds, so the other dogs are one click away.
+ * The listing, verbatim — but sentences the shelter reused across records are
+ * marked, so the template becomes visible inside the text itself. Marking
+ * changes no words; it only draws a line under the ones that were not written
+ * for this dog.
  */
-function renderShared(dog) {
+function renderListing(dog) {
+  return sentences(dog.listing_text)
+    .map((s) =>
+      state.sharedSet.has(s) ? `<span class="thread">${esc(s)}</span>` : esc(s)
+    )
+    .join(' ');
+}
+
+/** The typographic thread tying the shared-sentence records together. */
+function renderThread(dog) {
   const entries = state.shared.get(dog.id);
   if (!entries?.length) return '';
 
   const { sentence, others } = entries[0];
-  const buttons = others
-    .map(
-      (id) =>
-        `<button class="btn btn--compare" type="button" data-action="compare" data-target="${esc(id)}">Hear ${esc(byId.get(id).name)} read it</button>`
-    )
-    .join('');
+  const tail = sentence.length > 52 ? `…${sentence.slice(-46)}` : sentence;
 
-  const count = others.length + 1;
   return `
-    <aside class="shared">
-      <p class="shared__label">This sentence appears in ${count} of these ${state.dogs.length} listings, word for word</p>
-      <q class="shared__text">${esc(sentence)}</q>
-      <div class="shared__actions">${buttons}</div>
+    <aside class="echo">
+      <p class="label">Also appears in</p>
+      <ul class="echo__list">
+        ${others
+          .map(
+            (id) => `
+          <li>
+            <button type="button" data-action="compare" data-target="${esc(id)}">
+              <span class="echo__name">${esc(byId.get(id).name)}</span>
+              <span class="echo__line">${esc(tail)}</span>
+            </button>
+          </li>`
+          )
+          .join('')}
+      </ul>
     </aside>
   `;
 }
 
 /**
- * The stay slider (§6.3). A demonstration of the mapping, not a timeline — the
- * label says so, because no shelter publishes intake dates.
+ * The stay dial (§6.3). An instrument on the document, not a web-app slider:
+ * a ruled track, four struck stops, a marker that travels. The native input
+ * sits on top at zero opacity so keyboard and screen-reader behaviour is the
+ * real thing rather than an imitation.
  */
-function renderSlider(dog) {
+function renderDial(dog) {
   const stops = dog.timeline;
-  const ticks = stops
-    .map((stop) => `<span class="slider__tick">${esc(stop.label)}</span>`)
-    .join('');
+  const last = stops.length - 1;
 
   return `
-    <div class="slider">
-      <p class="slider__label">
-        The same record, with <code>days_in_shelter</code> as the only variable changed.
-        <span class="slider__caveat">A demonstration of the mapping — not this dog's real stay. No shelter publishes intake dates.</span>
+    <div class="dial">
+      <p class="label">Stay dial — <code>days_in_shelter</code> as the only variable</p>
+
+      <div class="dial__track" style="--stops:${stops.length}">
+        <div class="dial__rule" aria-hidden="true"></div>
+        <div class="dial__marks" aria-hidden="true">
+          ${stops.map(() => '<span></span>').join('')}
+        </div>
+        <div class="dial__marker" aria-hidden="true"></div>
+        <input class="dial__input" type="range" min="0" max="${last}" step="1" value="0"
+               aria-label="Days in shelter" data-action="stay"
+               aria-valuetext="${esc(stops[0].label)}, ${stops[0].days} days" />
+      </div>
+
+      <ol class="dial__stops">
+        ${stops
+          .map(
+            (s, i) =>
+              `<li class="dial__stop${i === 0 ? ' is-on' : ''}"><span class="dial__stop-label">${esc(s.label)}</span><span class="dial__stop-days">${s.days}d</span></li>`
+          )
+          .join('')}
+      </ol>
+
+      <p class="dial__caveat">
+        A demonstration of the mapping — not this dog's real stay. No shelter publishes intake dates.
       </p>
-      <input class="slider__input" type="range" min="0" max="${stops.length - 1}" step="1" value="0"
-             aria-label="Days in shelter" data-action="stay"
-             aria-valuetext="${esc(stops[0].label)}, ${stops[0].days} days" />
-      <div class="slider__ticks">${ticks}</div>
-      <p class="slider__readout"><b class="slider__days">${stops[0].days}</b> days in shelter</p>
-      <div class="slider__prompt" aria-live="polite">
-        <span class="slider__prompt-label">Voice Design prompt at this stop</span>
-        <code class="slider__prompt-text"></code>
+
+      <div class="dial__prompt" aria-live="polite">
+        <span class="label">Prompt at this stop</span>
+        <code class="dial__prompt-text"></code>
       </div>
     </div>
   `;
@@ -231,19 +263,17 @@ function renderDerivation(attributes) {
   const rows = steps
     .map((step) => {
       const unstated = step.input === 'unknown';
-      // "unknown" is a value the shelter published, not a gap in our data. The
-      // panel says which it is, so the reader can tell a silent rule from a
-      // missing record.
+      // "unknown" is a value the shelter published, not a gap in our data.
       const adds = step.fired
         ? esc(step.value)
         : unstated
-          ? '<span class="dash">— not published by the shelter</span>'
-          : '<span class="dash">— nothing</span>';
+          ? '<i>not published by the shelter</i>'
+          : '<i>nothing</i>';
 
       return `
       <tr class="${step.fired ? '' : 'is-quiet'}">
         <th scope="row">${esc(step.id)}</th>
-        <td>${esc(step.attribute)} = <b>${esc(step.input)}</b></td>
+        <td>${esc(step.attribute)} <b>${esc(step.input)}</b></td>
         <td>${adds}</td>
       </tr>`;
     })
@@ -252,11 +282,77 @@ function renderDerivation(attributes) {
   return `
     <table class="rules">
       <caption class="visually-hidden">Mapping from shelter record to voice prompt</caption>
-      <thead><tr><th scope="col">Rule</th><th scope="col">From the record</th><th scope="col">Adds</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
-    <p class="derivation__out"><span class="derivation__label">Voice Design prompt</span><code>${esc(prompt)}</code></p>
+    <p class="derivation__out"><span class="label">Voice Design prompt</span><code>${esc(prompt)}</code></p>
   `;
+}
+
+/* ─── interaction ─────────────────────────────────────────────────────────
+   Unchanged in substance from step 1: one audio element, and a source swap
+   that holds the playhead so the same sentence flips voices mid-word. */
+
+function wireRecord(el, dog) {
+  el.querySelector('[data-action="play"]').addEventListener('click', () => {
+    if (state.currentDogId !== dog.id) selectDog(dog);
+    bus.toggle();
+  });
+
+  for (const btn of el.querySelectorAll('[data-action="mode"]')) {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.mode;
+      if (state.currentDogId !== dog.id) {
+        selectDog(dog, mode);
+        return;
+      }
+      if (state.mode === mode) return;
+      state.mode = mode;
+      // The sentence is the same in both readings, so hold the playhead.
+      bus.swapSource(sourceFor(dog));
+      syncTransport();
+    });
+  }
+
+  for (const btn of el.querySelectorAll('[data-action="compare"]')) {
+    btn.addEventListener('click', () => {
+      const target = byId.get(btn.dataset.target);
+      selectDog(target, 'designed');
+      bus.play();
+      cards.get(target.id).el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+
+  const dial = el.querySelector('[data-action="stay"]');
+  if (dial) {
+    dial.addEventListener('input', () => {
+      const index = Number(dial.value);
+      const stop = dog.timeline[index];
+      state.heroStop = index;
+      dial.setAttribute('aria-valuetext', `${stop.label}, ${stop.days} days`);
+
+      if (state.currentDogId !== dog.id) {
+        // Land straight in designed mode — flat has no timeline to move along.
+        selectDog(dog, 'designed');
+        dial.value = String(index);
+        state.heroStop = index;
+        bus.load(sourceFor(dog));
+      } else if (state.mode === 'designed') {
+        // Same words, later in the stay: hold the playhead so the voice ages
+        // mid-sentence rather than restarting.
+        bus.swapSource(sourceFor(dog));
+      }
+      updateStay(dog, index);
+      syncTransport();
+    });
+  }
+}
+
+/** Which file should be playing, given the current dog / mode / stop. */
+function sourceFor(dog, mode = state.mode, stopIndex = state.heroStop) {
+  if (dog.hero && mode === 'designed' && dog.timeline?.[stopIndex]) {
+    return dog.timeline[stopIndex].audio;
+  }
+  return dog.audio[mode];
 }
 
 function selectDog(dog, mode = state.mode) {
@@ -264,28 +360,31 @@ function selectDog(dog, mode = state.mode) {
   state.currentDogId = dog.id;
   state.mode = mode;
   if (dog.hero) {
-    const slider = cards.get(dog.id)?.el.querySelector('[data-action="stay"]');
-    state.heroStop = slider ? Number(slider.value) : 0;
+    const dial = cards.get(dog.id)?.el.querySelector('[data-action="stay"]');
+    state.heroStop = dial ? Number(dial.value) : 0;
   }
   bus.load(sourceFor(dog));
   syncTransport();
 }
 
-/**
- * Push the slider position into the card: day count, derivation panel, and the
- * cooling that makes the stay visible as well as audible.
- */
+/** Push the dial position into the record: day count, derivation, warmth. */
 function updateStay(dog, index) {
   const entry = cards.get(dog.id);
   if (!entry) return;
   const stop = dog.timeline[index];
   const attributes = { ...dog.attributes, days_in_shelter: stop.days };
+  const { el } = entry;
 
-  entry.el.querySelector('.slider__days').textContent = String(stop.days);
-  entry.el.querySelector('.derivation > div').innerHTML = renderDerivation(attributes);
+  el.querySelector('.derivation__panel').innerHTML = renderDerivation(attributes);
+  el.style.setProperty('--stay', String(index / (dog.timeline.length - 1)));
+  el.querySelector('.dial__track').style.setProperty('--pos', String(index));
+
+  for (const [i, stopEl] of [...el.querySelectorAll('.dial__stop')].entries()) {
+    stopEl.classList.toggle('is-on', i === index);
+  }
 
   // The prompt is the thing that changed; show it where the hand is.
-  const promptEl = entry.el.querySelector('.slider__prompt-text');
+  const promptEl = el.querySelector('.dial__prompt-text');
   const next = buildVoicePrompt(attributes);
   if (promptEl.textContent !== next) {
     promptEl.textContent = next;
@@ -293,38 +392,34 @@ function updateStay(dog, index) {
     void promptEl.offsetWidth; // restart the highlight
     promptEl.classList.add('is-fresh');
   }
-  entry.el.style.setProperty('--stay', String(index / (dog.timeline.length - 1)));
-  entry.el.dataset.stay = stop.label;
-
-  for (const [i, tick] of [...entry.el.querySelectorAll('.slider__tick')].entries()) {
-    tick.classList.toggle('is-on', i === index);
-  }
 }
 
 /** Single place that pushes bus + state into the DOM. */
 function syncTransport() {
-  for (const { el, dog, playBtn, modeBtns } of cards.values()) {
+  for (const { el, dog } of cards.values()) {
     const active = dog.id === state.currentDogId;
     const playing = active && bus.playing;
 
     el.dataset.mode = active ? state.mode : 'flat';
     el.classList.toggle('is-active', active);
     el.classList.toggle('is-playing', playing);
-    playBtn.textContent = playing ? 'Pause' : 'Play';
 
-    for (const btn of modeBtns) {
-      const on = active && btn.dataset.mode === state.mode;
-      btn.classList.toggle('is-on', on || (!active && btn.dataset.mode === 'flat'));
-      btn.setAttribute('aria-pressed', String(on));
+    el.querySelector('.play__word').textContent = playing ? 'Pause' : 'Play';
+    el.querySelector('.play').classList.toggle('is-playing', playing);
+
+    for (const btn of el.querySelectorAll('[data-action="mode"]')) {
+      const on = active ? btn.dataset.mode === state.mode : btn.dataset.mode === 'flat';
+      btn.classList.toggle('is-on', on);
+      btn.setAttribute('aria-pressed', String(active && on));
     }
 
     el.querySelector('.clock').textContent = active
       ? `${formatTime(bus.position)} / ${formatTime(bus.duration)}`
       : '00:00 / 00:00';
-    el.querySelector('.src-readout code').textContent = active ? bus.currentSrc : '—';
-    el.querySelector('.src-readout').hidden = !active;
   }
 }
+
+/* ─── helpers ─────────────────────────────────────────────────────────── */
 
 /** 0.25 → "3m", 1.25 → "1y 3m", 8 → "8y". Shelters state ages this way. */
 function formatAge(years) {
@@ -332,6 +427,11 @@ function formatAge(years) {
   const months = Math.round((years - whole) * 12);
   if (whole === 0) return `${months}m`;
   return months ? `${whole}y ${months}m` : `${whole}y`;
+}
+
+const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'];
+function numberWord(n) {
+  return WORDS[n] ?? String(n);
 }
 
 function esc(value) {

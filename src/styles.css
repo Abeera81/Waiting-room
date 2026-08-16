@@ -1,5 +1,6 @@
-/* Step 0 baseline: tokens and a quiet document layout.
-   The mode strip, transition and waveform are step 5 — deliberately plain here. */
+/* The Waiting Room — a document that happens to be interactive.
+   Five colours, two faces, no decoration. Everything is carried by scale,
+   whitespace, alignment and hairline rules. */
 
 :root {
   --paper: #e8e4da;
@@ -8,491 +9,78 @@
   --on-air: #d8442f;
   --warm: #f2c14e;
 
+  /* Tints mixed from the five, never a sixth hue. */
+  --ink-60: color-mix(in srgb, var(--ink) 60%, var(--paper));
+  --ink-45: color-mix(in srgb, var(--ink) 45%, var(--paper));
+  --hairline: color-mix(in srgb, var(--rule) 70%, var(--paper));
+
   --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --display: 'Archivo Narrow', 'Archivo Condensed', Oswald, system-ui, sans-serif;
 
-  --step: 0.75rem;
-  --measure: 62ch;
+  --gutter: clamp(1.25rem, 5vw, 5rem);
+  --page: 84rem;
+  --measure: 34rem;
+
+  /* One vertical rhythm for the whole page. */
+  --space-s: clamp(0.75rem, 1.5vw, 1.25rem);
+  --space-m: clamp(1.5rem, 3vw, 2.75rem);
+  --space-l: clamp(3rem, 7vw, 6.5rem);
+  --space-xl: clamp(5rem, 12vw, 11rem);
 }
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+  border-radius: 0; /* nothing on this page is rounded */
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  padding: calc(var(--step) * 2) var(--step) calc(var(--step) * 4);
   background: var(--paper);
   color: var(--ink);
   font-family: var(--mono);
-  font-size: 15px;
-  line-height: 1.55;
+  font-size: 16px;
+  line-height: 1.6;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 :focus-visible {
   outline: 2px solid var(--ink);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
-.src-readout code {
-  font-size: 11px;
-  color: #6b665c;
-  overflow-wrap: anywhere;
+a {
+  color: inherit;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  text-decoration-color: var(--ink);
 }
 
 .skip-link {
   position: absolute;
   left: -9999px;
-  padding: 0.5rem 0.8rem;
+  padding: 0.6rem 0.9rem;
   background: var(--ink);
   color: var(--paper);
-  font-size: 12px;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .skip-link:focus {
-  left: var(--step);
-  top: var(--step);
-  z-index: 10;
-}
-
-/* ---- masthead ----------------------------------------------------------- */
-
-.masthead {
-  max-width: var(--measure);
-  margin: calc(var(--step) * 2) auto calc(var(--step) * 3);
-}
-
-.masthead h1 {
-  margin: 0 0 0.4em;
-  font-family: var(--display);
-  font-weight: 700;
-  font-size: clamp(2rem, 8vw, 3.25rem);
-  letter-spacing: -0.01em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.masthead__thesis {
-  margin: 0 0 1.2rem;
-  max-width: 52ch;
-  font-weight: 300;
-}
-
-/* The headline finding. It was inheriting body defaults and reading as a
-   footnote; it is the argument, so it gets the weight. */
-.masthead__note {
-  margin: 0;
-  max-width: 46ch;
-  padding-left: 0.9rem;
-  border-left: 3px solid var(--ink);
-  font-size: clamp(1rem, 2.6vw, 1.25rem);
-  line-height: 1.55;
-  font-weight: 500;
-  color: var(--ink);
-}
-
-/* ---- cards -------------------------------------------------------------- */
-
-.shelf {
-  display: grid;
-  gap: calc(var(--step) * 2);
-  max-width: var(--measure);
-  margin: 0 auto;
-}
-
-/* Above 900px the single column wastes the viewport and makes eight dogs a long
-   scroll. Two columns, hero full-width — it carries the slider and needs room. */
-@media (min-width: 900px) {
-  .masthead,
-  .colophon {
-    max-width: 78rem;
-  }
-
-  .shelf {
-    grid-template-columns: 1fr 1fr;
-    max-width: 78rem;
-    align-items: start;
-  }
-
-  .card.is-hero {
-    grid-column: 1 / -1;
-  }
-}
-
-.card {
-  border: 1px solid var(--rule);
-  padding: var(--step);
-  background: transparent;
-}
-
-.card.is-active {
-  border-color: var(--ink);
-}
-
-.strip {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--rule);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #6b665c;
-}
-
-.strip__meta {
-  margin-left: auto;
-  letter-spacing: 0.04em;
-}
-
-/* The one place --on-air is allowed to appear (§7). Lit in designed mode;
-   pulsing only while that reading is actually playing. */
-.on-air {
-  width: 9px;
-  height: 9px;
-  border: 1px solid var(--rule);
-  border-radius: 50%;
-  transition: background 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
-}
-
-.card[data-mode='designed'] .on-air {
-  background: var(--on-air);
-  border-color: var(--on-air);
-  box-shadow: 0 0 0 3px rgba(216, 68, 47, 0.18);
-}
-
-.card[data-mode='designed'].is-playing .on-air {
-  animation: on-air-pulse 1.6s ease-in-out infinite;
-}
-
-@keyframes on-air-pulse {
-  50% {
-    box-shadow: 0 0 0 6px rgba(216, 68, 47, 0.08);
-  }
-}
-
-/* The strip carries the same signal as a word, for anyone who can't see the dot. */
-.strip__live {
-  color: var(--on-air);
-  letter-spacing: 0.14em;
-}
-
-.card:not([data-mode='designed']) .strip__live {
-  visibility: hidden;
-}
-
-.card__name {
-  margin: 0.75rem 0 0.5rem;
-  font-family: var(--display);
-  font-weight: 700;
-  font-size: clamp(1.5rem, 5vw, 2rem);
-  letter-spacing: 0.01em;
-  line-height: 1.05;
-  text-transform: uppercase;
-}
-
-.facts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 1.5rem;
-  margin: 0 0 0.9rem;
-  font-size: 12px;
-}
-
-.facts div {
-  display: flex;
-  gap: 0.4rem;
-}
-
-.facts dt {
-  color: #6b665c;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.facts dd {
-  margin: 0;
-}
-
-/* The listing is quoted material, not our prose. It reads as typed onto the
-   form: indented, ruled off, never restyled into something friendlier. */
-.listing {
-  margin: 0 0 0.6rem;
-  padding: 0 0 0 0.9rem;
-  border-left: 2px solid var(--rule);
-  /* Larger and looser than the fact row: these are the words the voice reads,
-     so the eye should land here and not on the metadata. */
-  font-size: 16px;
-  line-height: 1.7;
-  font-weight: 400;
-  white-space: pre-wrap;
-}
-
-.card[data-mode='designed'] .listing {
-  font-weight: 300;
-  letter-spacing: 0.015em;
-  border-left-color: var(--warm);
-}
-
-.attribution {
-  margin: 0 0 1rem;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #6b665c;
-}
-
-/* ---- shared text -------------------------------------------------------- */
-
-.shared {
-  margin: 0 0 1rem;
-  padding: 0.7rem 0.8rem;
-  border: 1px solid var(--rule);
-  background: rgba(184, 176, 160, 0.14);
-}
-
-.shared__label {
-  margin: 0 0 0.4rem;
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #6b665c;
-}
-
-.shared__text {
-  display: block;
-  margin-bottom: 0.6rem;
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.shared__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.btn--compare {
-  font-size: 11px;
-}
-
-/* ---- stay slider -------------------------------------------------------- */
-
-.slider {
-  margin: 0 0 1rem;
-  padding: 1.1rem 1.1rem 1rem;
-  border: 1px solid var(--ink);
-}
-
-.card.is-hero {
-  border-color: var(--ink);
-  border-width: 2px;
-}
-
-.slider__label {
-  margin: 0 0 0.7rem;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #6b665c;
-}
-
-.slider__label code {
-  font-size: 11px;
-  color: var(--ink);
-}
-
-.slider__caveat {
-  display: block;
-  margin-top: 0.25rem;
-  font-style: italic;
-}
-
-/* The slider is the centrepiece, not a divider: a real track with real hit
-   area, and stops you can read without hunting. */
-.slider__input {
-  width: 100%;
-  margin: 0;
-  height: 2.25rem;
-  accent-color: var(--ink);
-  cursor: pointer;
-}
-
-.slider__ticks {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 0.1rem;
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #6b665c;
-}
-
-.slider__tick {
-  flex: 1;
-  text-align: center;
-  padding-top: 0.35rem;
-  border-top: 1px solid var(--rule);
-}
-
-.slider__tick:first-child {
-  text-align: left;
-}
-
-.slider__tick:last-child {
-  text-align: right;
-}
-
-.slider__tick.is-on {
-  color: var(--ink);
-  font-weight: 700;
-  border-top-color: var(--ink);
-}
-
-.slider__readout {
-  margin: 0.8rem 0 0;
-  font-size: 13px;
-  color: #6b665c;
-}
-
-.slider__days {
-  font-family: var(--display);
-  font-size: 2.25rem;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink);
-  vertical-align: -0.15em;
-  margin-right: 0.15em;
-}
-
-.slider__prompt {
-  margin-top: 0.8rem;
-  padding-top: 0.7rem;
-  border-top: 1px solid var(--rule);
-}
-
-.slider__prompt-label {
-  display: block;
-  margin-bottom: 0.3rem;
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #6b665c;
-}
-
-.slider__prompt-text {
-  display: block;
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--ink);
-  overflow-wrap: anywhere;
-}
-
-/* A brief warm wash on the words that just changed. */
-.slider__prompt-text.is-fresh {
-  animation: prompt-refresh 900ms ease-out;
-}
-
-@keyframes prompt-refresh {
-  from {
-    background: var(--warm);
-  }
-  to {
-    background: transparent;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .slider__prompt-text.is-fresh {
-    animation: none;
-  }
-}
-
-/* The card cools as the stay lengthens — the one place motion earns its keep.
-   --stay runs 0..1 and is set by updateStay(). */
-.card[data-mode='designed'] .slider {
-  background: color-mix(in srgb, var(--warm) calc((1 - var(--stay, 0)) * 18%), transparent);
-  transition: background 320ms ease;
-}
-
-/* ---- derivation panel --------------------------------------------------- */
-
-.derivation {
-  margin-top: 0.9rem;
-  border-top: 1px solid var(--rule);
-  padding-top: 0.6rem;
-}
-
-.derivation summary {
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #6b665c;
-  cursor: pointer;
-}
-
-.derivation summary:hover {
-  color: var(--ink);
-}
-
-.rules {
-  width: 100%;
-  margin: 0.7rem 0 0;
-  border-collapse: collapse;
-  font-size: 11px;
-  text-align: left;
-}
-
-.rules th,
-.rules td {
-  padding: 0.3rem 0.5rem 0.3rem 0;
-  border-bottom: 1px solid var(--rule);
-  vertical-align: top;
-  font-weight: 400;
-}
-
-.rules thead th {
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #6b665c;
-}
-
-.rules tbody th {
-  letter-spacing: 0.08em;
-  white-space: nowrap;
-}
-
-.rules .is-quiet {
-  color: #8a8477;
-}
-
-.rules .dash {
-  font-style: italic;
-}
-
-.derivation__out {
-  margin: 0.7rem 0 0;
-}
-
-.derivation__label {
-  display: block;
-  margin-bottom: 0.25rem;
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #6b665c;
-}
-
-.derivation__out code {
-  font-size: 12px;
-  overflow-wrap: anywhere;
-}
-
-.card[data-mode='designed'] .derivation__out code {
-  border-bottom: 2px solid var(--warm);
+  left: var(--gutter);
+  top: 1rem;
+  z-index: 20;
 }
 
 .visually-hidden {
@@ -507,91 +95,1012 @@ body {
   border: 0;
 }
 
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--rule);
+/* The one small type style used throughout for administrative labels.
+   Always secondary — it never competes with a name or a listing. */
+.label {
+  margin: 0 0 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-45);
 }
 
-.btn {
-  padding: 0.4rem 0.7rem;
-  border: 1px solid var(--rule);
-  background: transparent;
-  color: var(--ink);
-  font: inherit;
-  font-size: 12px;
+.label code {
+  font-size: inherit;
   letter-spacing: 0.06em;
+  text-transform: none;
+  color: var(--ink-60);
+}
+
+/* ══ COVER ════════════════════════════════════════════════════════════════ */
+
+.cover {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem) var(--gutter) 0;
+}
+
+.cover__slug {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 var(--space-xl);
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--ink);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
+}
+
+.cover__file {
+  color: var(--ink-45);
+}
+
+/* The title sets the scale for everything below it. Three words, three lines,
+   filling the measure — the page opens like a cover, not a header bar. */
+.cover__title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(3.5rem, 17vw, 15rem);
+  line-height: 0.82;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.cover__title span {
+  display: block;
+}
+
+.cover__title span:nth-child(2) {
+  text-indent: 0.09em;
+}
+
+.cover__title span:last-child {
+  text-indent: 0.18em;
+}
+
+.cover__deck {
+  display: grid;
+  gap: var(--space-m);
+  margin-top: var(--space-l);
+  padding-top: var(--space-m);
+  border-top: 1px solid var(--ink);
+}
+
+.cover__lede {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(1.75rem, 4.5vw, 3.25rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+.cover__body {
+  margin: 0;
+  max-width: var(--measure);
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--ink-60);
+}
+
+@media (min-width: 60rem) {
+  .cover__deck {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: var(--space-l);
+  }
+}
+
+/* ══ THE FINDING ══════════════════════════════════════════════════════════
+   The conceptual centre of the piece. It gets the largest quoted type on the
+   page and a full band of empty paper on either side of it. */
+
+.finding {
+  margin: var(--space-xl) 0 var(--space-l);
+  padding: var(--space-m) 0 var(--space-l);
+  border-top: 3px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+
+.finding__heading {
+  margin: 0 0 var(--space-l);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--ink-45);
+}
+
+.finding__quote {
+  margin: 0;
+  max-width: 22ch;
+  font-family: var(--display);
+  font-size: clamp(2rem, 7.5vw, 6rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+/* The one restrained use of warmth outside designed mode: a struck-through
+   underline beneath the sentence the shelters reuse. */
+.finding__quote::after {
+  content: '';
+  display: block;
+  width: min(100%, 26rem);
+  height: 0.5rem;
+  margin-top: var(--space-m);
+  background: var(--warm);
+}
+
+.finding__attrib {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--space-m);
+  margin-top: var(--space-m);
+}
+
+.finding__names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.finding__names span + span::before {
+  content: '·';
+  margin-right: 1.1rem;
+  color: var(--rule);
+}
+
+.finding__count {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(1.25rem, 2.6vw, 2rem);
+  font-weight: 500;
+  line-height: 1.15;
+  text-align: right;
+}
+
+.finding__gloss {
+  margin: var(--space-m) 0 0;
+  max-width: var(--measure);
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--ink-60);
+}
+
+/* ══ RECORDS ══════════════════════════════════════════════════════════════ */
+
+.record {
+  --stay: 0;
+  position: relative;
+  transition: background-color 400ms ease;
+}
+
+/* Designed mode warms the paper — a shift, never a colour wash. The hero
+   cools again as the stay lengthens, so the warmth drains out of the record
+   as the dial moves right. */
+.record[data-mode='designed'] {
+  background-color: color-mix(
+    in srgb,
+    var(--warm) calc(7% * (1 - var(--stay))),
+    transparent
+  );
+}
+
+/* Every record hangs off the same left rail: the file number sits in the
+   margin and the whole record aligns to the name. That repetition down the
+   page is what makes the archive read as filed rather than stacked. */
+.record {
+  --rail: clamp(2.75rem, 5vw, 4.5rem);
+  --rail-gap: clamp(1rem, 3vw, 2.5rem);
+}
+
+.record__head {
+  display: grid;
+  grid-template-columns: var(--rail) 1fr auto;
+  align-items: start;
+  gap: var(--rail-gap);
+}
+
+.record__index {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--rule);
+  font-variant-numeric: tabular-nums;
+}
+
+.record__kicker {
+  margin: 0 0 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-45);
+}
+
+.record__name {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 700;
+  line-height: 0.88;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+}
+
+.record__breed {
+  margin: 0.7rem 0 0;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  color: var(--ink-60);
+}
+
+/* ON AIR — the only place red is allowed. Invisible until it is true. */
+.record__air {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.4rem 0 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--on-air);
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+
+.record.is-playing .record__air {
+  opacity: 1;
+}
+
+.record__air-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--on-air);
+}
+
+.record.is-playing .record__air-dot {
+  animation: air-pulse 1.7s ease-in-out infinite;
+}
+
+@keyframes air-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* ── the listing ── */
+
+.listing {
+  margin: 0;
+  font-weight: 300;
+  letter-spacing: -0.005em;
+  hyphens: none;
+}
+
+.record__reading .label {
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--hairline);
+}
+
+/* Sentences the shelter reused. Marked, never reworded. */
+.thread {
+  box-shadow: inset 0 -1px 0 var(--rule);
+}
+
+.record[data-mode='designed'] .thread {
+  box-shadow: inset 0 -1px 0 var(--ink-45);
+}
+
+.attribution {
+  margin: var(--space-m) 0 0;
+  font-size: 0.75rem;
+  line-height: 1.7;
+  color: var(--ink-45);
+}
+
+.attribution__flag {
+  display: block;
+  margin-top: 0.35rem;
+}
+
+/* ── the echo: shared-sentence records point at one another ── */
+
+.echo {
+  margin-top: var(--space-m);
+  padding-top: var(--space-s);
+  border-top: 1px solid var(--hairline);
+}
+
+.echo__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.echo__list button {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.9rem;
+  width: 100%;
+  padding: 0.55rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--hairline);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
   cursor: pointer;
 }
 
-.btn:hover {
-  border-color: var(--ink);
+.echo__list button:hover .echo__name,
+.echo__list button:focus-visible .echo__name {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
 }
 
-.btn--mode.is-on {
-  border-color: var(--ink);
+.echo__name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  min-width: 7rem;
+}
+
+.echo__line {
+  flex: 1;
+  font-size: 0.8125rem;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--ink-60);
+}
+
+/* ── apparatus: the instruments beside the document ── */
+
+.voicetest__modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--ink);
+}
+
+.mode {
+  padding: 0.85rem 0.7rem;
+  border: 0;
+  background: none;
+  color: var(--ink-60);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 220ms ease, color 220ms ease;
+}
+
+.mode + .mode {
+  border-left: 1px solid var(--ink);
+}
+
+.mode__name {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.mode__gloss {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.6875rem;
+  font-weight: 300;
+  color: var(--ink-45);
+}
+
+.mode.is-on {
   background: var(--ink);
   color: var(--paper);
 }
 
-.modes {
+.mode.is-on .mode__gloss {
+  color: color-mix(in srgb, var(--paper) 70%, var(--ink));
+}
+
+/* Designed, and playing: the active chip picks up the warmth. */
+.record[data-mode='designed'].is-playing .mode.is-on[data-mode='designed'] {
+  background: color-mix(in srgb, var(--warm) 88%, var(--ink));
+  color: var(--ink);
+}
+
+.record[data-mode='designed'].is-playing .mode.is-on[data-mode='designed'] .mode__gloss {
+  color: color-mix(in srgb, var(--ink) 65%, var(--warm));
+}
+
+.transport {
   display: flex;
-  gap: 0.25rem;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.9rem;
+}
+
+.play {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 1rem 0.55rem 0.8rem;
+  border: 1px solid var(--ink);
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+.play:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.play__glyph {
+  width: 0;
+  height: 0;
+  border-left: 0.55rem solid currentColor;
+  border-top: 0.35rem solid transparent;
+  border-bottom: 0.35rem solid transparent;
+}
+
+.play.is-playing .play__glyph {
+  width: 0.5rem;
+  height: 0.7rem;
+  border: 0;
+  background: currentColor;
+  box-shadow: inset 0 0 0 0.14rem var(--paper);
+}
+
+.play.is-playing:hover .play__glyph {
+  box-shadow: inset 0 0 0 0.14rem var(--ink);
 }
 
 .clock {
-  margin-left: auto;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
-  color: #6b665c;
+  letter-spacing: 0.08em;
+  color: var(--ink-45);
 }
 
-.src-readout {
-  margin: 0.6rem 0 0;
+/* ── facts: administrative, deliberately quiet ── */
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  margin: var(--space-m) 0 0;
+  border-top: 1px solid var(--hairline);
 }
 
-.src-readout__label {
-  font-size: 11px;
+.facts div {
+  padding: 0.6rem 0.75rem 0.6rem 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.facts dt {
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #6b665c;
+  color: var(--ink-45);
 }
+
+.facts dd {
+  margin: 0.2rem 0 0;
+  font-size: 0.8125rem;
+}
+
+/* ── derivation ── */
+
+.derivation {
+  margin-top: var(--space-m);
+  border-top: 1px solid var(--hairline);
+}
+
+.derivation summary {
+  padding: 0.8rem 0;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-45);
+  cursor: pointer;
+  list-style: none;
+}
+
+.derivation summary::-webkit-details-marker {
+  display: none;
+}
+
+.derivation summary span::before {
+  content: '+ ';
+}
+
+.derivation[open] summary span::before {
+  content: '− ';
+}
+
+.derivation summary:hover {
+  color: var(--ink);
+}
+
+.rules {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  text-align: left;
+}
+
+.rules th,
+.rules td {
+  padding: 0.45rem 0.6rem 0.45rem 0;
+  border-bottom: 1px solid var(--hairline);
+  vertical-align: top;
+  font-weight: 400;
+}
+
+.rules tbody th {
+  width: 6.5rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--ink-45);
+  white-space: nowrap;
+}
+
+.rules td b {
+  font-weight: 600;
+}
+
+.rules .is-quiet {
+  color: var(--ink-45);
+}
+
+.rules i {
+  font-style: italic;
+}
+
+.derivation__out {
+  margin: var(--space-s) 0 var(--space-m);
+}
+
+.derivation__out code {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+/* ══ FEATURED RECORD ══════════════════════════════════════════════════════
+   A specimen sheet. Different composition from the archive, not a bigger
+   version of it: the name runs to the full measure, the listing is set at
+   reading size, and the instruments sit in their own ruled column. */
+
+.featured {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.record--hero {
+  padding: var(--space-l) 0 var(--space-xl);
+  border-bottom: 3px solid var(--ink);
+}
+
+.record--hero .record__head {
+  padding-bottom: var(--space-m);
+  border-bottom: 1px solid var(--ink);
+}
+
+.record--hero .record__index {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.record--hero .record__name {
+  font-size: clamp(4rem, 16vw, 13rem);
+}
+
+.record--hero .record__breed {
+  font-size: 0.875rem;
+}
+
+.record--hero .record__body {
+  display: grid;
+  gap: var(--space-l);
+  padding-top: var(--space-l);
+}
+
+.record--hero .listing {
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  line-height: 1.75;
+}
+
+@media (min-width: 60rem) {
+  .record--hero .record__body {
+    grid-template-columns: minmax(0, 1.15fr) minmax(21rem, 0.85fr);
+    gap: var(--space-l);
+    margin-left: calc(var(--rail) + var(--rail-gap));
+  }
+
+  .record--hero .record__apparatus {
+    padding-left: var(--space-m);
+    border-left: 1px solid var(--ink);
+  }
+}
+
+/* ── the stay dial ── */
+
+.dial {
+  margin-top: var(--space-m);
+  padding-top: var(--space-m);
+  border-top: 1px solid var(--hairline);
+}
+
+.dial__track {
+  --pos: 0;
+  --inset: 0.65rem; /* half the marker, so it never hangs off either end */
+  position: relative;
+  height: 3.25rem;
+  margin-top: 0.5rem;
+}
+
+.dial__rule,
+.dial__marks,
+.dial__marker {
+  pointer-events: none; /* the real input sits on top and must receive the drag */
+}
+
+.dial__rule {
+  position: absolute;
+  top: 1.5rem;
+  left: var(--inset);
+  right: var(--inset);
+  height: 1px;
+  background: var(--ink);
+}
+
+/* Four struck stops on the rule — the instrument's graduations. */
+.dial__marks {
+  position: absolute;
+  top: 0.75rem;
+  left: var(--inset);
+  right: var(--inset);
+  display: flex;
+  justify-content: space-between;
+}
+
+.dial__marks span {
+  width: 1px;
+  height: 1.5rem;
+  background: var(--ink);
+}
+
+/* The travelling marker. A struck square, not a pill. */
+.dial__marker {
+  position: absolute;
+  top: 0.85rem;
+  left: calc(
+    var(--inset) + (100% - 2 * var(--inset)) * var(--pos) / (var(--stops) - 1)
+  );
+  width: 1.3rem;
+  height: 1.3rem;
+  margin-left: calc(var(--inset) * -1);
+  background: var(--ink);
+  transition: left 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.record[data-mode='designed'] .dial__marker {
+  background: color-mix(in srgb, var(--warm) calc(100% * (1 - var(--stay))), var(--ink));
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+/* The real control, invisible, sitting exactly over the drawn one. */
+.dial__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.dial__track:has(.dial__input:focus-visible) .dial__marker {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.dial__stops {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dial__stop {
+  flex: 1;
+  text-align: center;
+  color: var(--ink-45);
+  transition: color 220ms ease;
+}
+
+.dial__stop:first-child {
+  text-align: left;
+}
+
+.dial__stop:last-child {
+  text-align: right;
+}
+
+.dial__stop-label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.dial__stop-days {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.625rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--rule);
+}
+
+.dial__stop.is-on {
+  color: var(--ink);
+}
+
+.dial__stop.is-on .dial__stop-label {
+  font-weight: 700;
+}
+
+.dial__caveat {
+  margin: var(--space-s) 0 0;
+  font-size: 0.75rem;
+  font-style: italic;
+  line-height: 1.7;
+  color: var(--ink-45);
+}
+
+.dial__prompt {
+  margin-top: var(--space-s);
+  padding-top: var(--space-s);
+  border-top: 1px solid var(--hairline);
+}
+
+.dial__prompt-text {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.dial__prompt-text.is-fresh {
+  animation: prompt-refresh 900ms ease-out;
+}
+
+@keyframes prompt-refresh {
+  from {
+    background: var(--warm);
+  }
+  to {
+    background: transparent;
+  }
+}
+
+/* ══ ARCHIVE ══════════════════════════════════════════════════════════════
+   Records filed in sequence. Lighter than the hero, ruled off from one
+   another, with the listing given the width and the instruments held to a
+   narrow column at the right. */
+
+.archive {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--gutter) var(--space-l);
+}
+
+.archive__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: var(--space-s);
+  border-bottom: 1px solid var(--ink);
+}
+
+.archive__title {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.archive__note {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-45);
+}
+
+.shelf > .record {
+  padding: var(--space-l) 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.shelf > .record:last-child {
+  border-bottom: 0;
+}
+
+.shelf .record__name {
+  font-size: clamp(2.5rem, 7vw, 4.75rem);
+}
+
+.shelf .record__body {
+  display: grid;
+  gap: var(--space-m);
+  padding-top: var(--space-m);
+}
+
+.shelf .listing {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  max-width: 46rem;
+}
+
+@media (min-width: 60rem) {
+  .shelf .record__body {
+    grid-template-columns: minmax(0, 1fr) minmax(17rem, 20rem);
+    gap: var(--space-l);
+    margin-left: calc(var(--rail) + var(--rail-gap));
+  }
+
+  .shelf .record__apparatus {
+    padding-left: var(--space-m);
+    border-left: 1px solid var(--hairline);
+  }
+
+  .shelf .facts {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ══ COLOPHON ═════════════════════════════════════════════════════════════ */
 
 .colophon {
-  max-width: var(--measure);
-  margin: calc(var(--step) * 4) auto 0;
-  font-size: 11px;
-  color: #6b665c;
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: var(--space-l) var(--gutter) var(--space-xl);
+  border-top: 3px solid var(--ink);
 }
 
+.colophon__grid {
+  display: grid;
+  gap: var(--space-m);
+}
+
+@media (min-width: 60rem) {
+  .colophon__grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-l);
+  }
+}
+
+.colophon__block h3 {
+  margin: 0 0 var(--space-s);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-45);
+}
+
+.colophon__block p {
+  margin: 0 0 0.9rem;
+  font-size: 0.8125rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--ink-60);
+}
+
+.colophon__block code {
+  font-size: 0.75rem;
+  color: var(--ink);
+}
+
+.colophon__sig {
+  color: var(--ink-45) !important;
+}
+
+/* ══ SMALL SCREENS ════════════════════════════════════════════════════════
+   Recomposed, not shrunk: the instruments move under the listing, the facts
+   run full width, and the reading sizes hold. */
+
+@media (max-width: 60rem) {
+  .record__head {
+    grid-template-columns: auto 1fr;
+  }
+
+  .record__air {
+    grid-column: 2;
+    margin-top: 0.75rem;
+  }
+
+  .record__apparatus {
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--ink);
+  }
+}
+
+@media (max-width: 30rem) {
+  .voicetest__modes {
+    grid-template-columns: 1fr;
+  }
+
+  .mode + .mode {
+    border-left: 0;
+    border-top: 1px solid var(--ink);
+  }
+
+  .finding__count {
+    text-align: left;
+  }
+
+  .facts {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ══ REDUCED MOTION ═══════════════════════════════════════════════════════ */
+
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
   }
 
-  /* The on-air dot stays lit — it carries state, so it must not be animated away. */
-  .card[data-mode='designed'] .on-air {
+  /* The dot carries state, so it stays lit rather than animating away. */
+  .record.is-playing .record__air-dot {
     animation: none;
-  }
-}
-
-/* Touch targets and a full-width transport on a phone. */
-@media (max-width: 420px) {
-  .btn {
-    padding: 0.55rem 0.75rem;
-  }
-
-  .clock {
-    width: 100%;
-    margin-left: 0;
   }
 }
