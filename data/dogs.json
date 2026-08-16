@@ -19,7 +19,8 @@
         "behaviour_notes": ["good_with_kids", "no_dogs", "no_cats", "house_trained"]
       },
       "shelter_note": "The rescue's longest resident. Adoption fee reduced to $20.",
-      "audio": { "flat": "public/audio/yuji_flat.mp3", "designed": "public/audio/yuji_designed.mp3" },
+      "_audio_note": "designed points at the Week 1 slider clip on purpose. Yuji's record has days_in_shelter \"unknown\", which fires no weariness modifier; the Week 1 stop (3 days) is under the 30-day threshold and fires none either. Both derive the identical prompt, so they are the same recording. Enforced by a test.",
+      "audio": { "flat": "public/audio/yuji_flat.mp3", "designed": "public/audio/yuji_d003.mp3" },
       "timeline": [
         { "label": "Week 1", "days": 3, "audio": "public/audio/yuji_d003.mp3" },
         { "label": "Month 1", "days": 30, "audio": "public/audio/yuji_d030.mp3" },

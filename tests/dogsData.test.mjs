@@ -19,7 +19,25 @@ test('ids are unique and match the audio filenames', () => {
   assert.equal(new Set(dogs.map((d) => d.id)).size, dogs.length);
   for (const dog of dogs) {
     assert.equal(dog.audio.flat, `public/audio/${dog.id}_flat.mp3`);
-    assert.equal(dog.audio.designed, `public/audio/${dog.id}_designed.mp3`);
+  }
+});
+
+test('a designed track shared with a slider stop derives the same prompt', () => {
+  // Yuji's designed track is the Week 1 clip: his record's days_in_shelter is
+  // "unknown" and Week 1 is 3 days, so neither fires a weariness modifier and
+  // both derive the identical prompt. Reusing the recording is correct only
+  // while that stays true — if either prompt changes, this fails.
+  for (const dog of dogs) {
+    const stop = (dog.timeline ?? []).find((t) => t.audio === dog.audio.designed);
+    if (!stop) {
+      assert.equal(dog.audio.designed, `public/audio/${dog.id}_designed.mp3`);
+      continue;
+    }
+    assert.equal(
+      buildVoicePrompt(dog.attributes),
+      buildVoicePrompt({ ...dog.attributes, days_in_shelter: stop.days }),
+      `${dog.id}: designed track reuses the ${stop.label} clip but the prompts differ`
+    );
   }
 });
 
