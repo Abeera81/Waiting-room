@@ -47,7 +47,8 @@ export const RULES = [
     bands: [
       { max: 29, value: null },
       { max: 119, value: 'a little flat' },
-      { max: Infinity, value: 'quiet and tired' },
+      { max: 179, value: 'quiet and tired' },
+      { max: Infinity, value: 'flat, barely lifting, worn through' },
     ],
   },
   {
@@ -130,17 +131,38 @@ function pick(rule, input) {
 }
 
 /**
- * The hero dog's stay, as prompts. One variable moves; everything else about
- * the record is held fixed. This is the claim the hero slider makes audible, so
- * it must go through buildVoicePrompt rather than reimplement it.
+ * The hero slider's four stops (§6.3).
+ *
+ * Labelled by elapsed time because the raw day number would imply we know how
+ * long the dog has waited. We do not — no shelter publishes intake dates.
+ *
+ * KNOWN: Month 6 (180) and Year 2 (730) share the 180+ band, so the last drag
+ * is inaudible. Relabelling stop 3 to Month 4 / 120 fixes it. Pending decision.
+ */
+export const SLIDER_STOPS = [
+  { label: 'Week 1', days: 3 },
+  { label: 'Month 1', days: 30 },
+  { label: 'Month 6', days: 180 },
+  { label: 'Year 2', days: 730 },
+];
+
+/**
+ * The hero slider's stops, as prompts.
+ *
+ * This is a demonstration of the mapping, NOT a claim about any dog's real
+ * stay — no shelter publishes intake dates, so no dog's timeline is knowable.
+ * One real record is held fixed and `days_in_shelter` alone is moved, which is
+ * why this routes through buildVoicePrompt rather than reimplementing it: the
+ * "one variable moved" claim holds by construction.
  *
  * @param {object} attributes
- * @param {number[]} days - checkpoints, e.g. [1, 30, 120, 214]
- * @returns {Array<{day:number, prompt:string}>}
+ * @param {Array<{label: string, days: number}>} stops
+ * @returns {Array<{label:string, days:number, prompt:string}>}
  */
-export function buildStayTimeline(attributes, days) {
-  return days.map((day) => ({
-    day,
-    prompt: buildVoicePrompt({ ...attributes, days_in_shelter: day }),
+export function buildStayTimeline(attributes, stops) {
+  return stops.map(({ label, days }) => ({
+    label,
+    days,
+    prompt: buildVoicePrompt({ ...attributes, days_in_shelter: days }),
   }));
 }

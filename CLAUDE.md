@@ -37,7 +37,7 @@ Trade-offs resolve in favour of the right column.
 - The ElevenLabs winner won for using the API as something **other than a narrator**.
 - The Google AI winner won with **1 reaction** for showing its sources. **Reactions do not decide this.** Do not optimize for the feed.
 - The overall winner used **3,535 real OpenStreetMap footprints**. Real data beats synthetic.
-- Every winner imposed a **self-constraint**. Ours: **the dog never speaks in first person.**
+- Every winner imposed a **self-constraint**. Ours: **not one word of the listing text is ours** (§3.3) — we supply the voice, never the words.
 
 ### The competition
 
@@ -51,7 +51,7 @@ The strongest existing ElevenLabs entry generates calming audio *for* dogs using
 
 1. **No API keys in the repo.** All audio pre-generated and committed as MP3.
 2. **No live ElevenLabs calls from the browser.** Deterministic demo.
-3. **The dog never speaks in first person.** No "Hi, I'm Rocky." The voice reads the *shelter's* words *about* the dog. If a line makes you wince at its cuteness, cut it.
+3. **Not one word of the listing text is ours.** 100% verbatim — no additions, no paraphrase, no trimming for taste. Shelters write in the dog's first person ("I may be shy at first"); that copy ships exactly as published. The contrast between the shelter's upbeat first-person copy and a worn voice reading it **is the thesis** — the cheerfulness is the institution's, the weariness is the record's.
 4. **Never invent dog data.** All listings verbatim from real shelters, supplied by the human. If `dogs.json` is missing or contains placeholders, **stop and ask**. Fabricated listings risk disqualification.
 5. **No backend, database, auth, or third-party APIs.**
 6. **Every commit leaves the app working.**
@@ -63,7 +63,7 @@ The strongest existing ElevenLabs entry generates calming audio *for* dogs using
 
 ### Build exactly this
 - 7 standard dog cards: flat ↔ designed toggle
-- 1 hero dog with a **stay slider**: 4 checkpoints across its time in shelter
+- 1 hero dog with a **stay slider**: 4 checkpoints demonstrating the mapping (§6.3), not a real timeline
 - Verbatim listing text per card
 - **Timestamp-preserving audio swap** (§6.1 — this is the demo)
 - Derivation panel showing attributes → voice prompt
@@ -83,7 +83,7 @@ Search. Filters. Sort. Pagination. Favourites. Dark mode. Share buttons. A shelt
   "id": "rocky",
   "name": "Rocky",
   "hero": false,
-  "listing_text": "Verbatim shelter text. Never paraphrase.",
+  "listing_text": "Verbatim shelter text, first person and all. Never paraphrase, never trim.",
   "attributes": {
     "age_years": 9, "age_band": "senior", "breed": "Shepherd Mix",
     "size": "large", "intake_type": "owner_surrender",
@@ -148,7 +148,8 @@ BASE       age_band  puppy→"bright, very fast, unsteady, tumbling"
                      adult→"even, steady, measured"
                      senior→"low, slow, weary, patient"
 PITCH      size      large→"lower, resonant"   small→"higher, clipped"
-WEARINESS  days      1-29→(none)  30-119→"a little flat"  120+→"quiet and tired"
+WEARINESS  days      1-29→(none)  30-119→"a little flat"
+                     120-179→"quiet and tired"  180+→"flat, barely lifting, worn through"
 GUARD      returns   1→"slightly hesitant"  2+→"anxious, over-eager, trying too hard"
 STRAIN     intake    stray→"watchful"  owner_surrender→"resigned"  returned→"uncertain"
 ```
@@ -157,7 +158,25 @@ Signature: `buildVoicePrompt(attributes) → string`. Pure function, no side eff
 
 ### 6.3 The hero slider
 
-Four discrete stops, not continuous. Label them by day, and show days-in-shelter prominently. As the slider moves right the card should visibly cool — this is the one place motion earns its keep.
+**It is a demonstration of the mapping function, not a claim about a real dog's stay.** No shelter publishes intake dates, so no dog's actual timeline is knowable — the post states this outright. The slider holds one real record fixed and moves `days_in_shelter` alone, showing what the function does with that one variable. Label it as such in the UI; never imply the hero waited these lengths.
+
+Four discrete stops, not continuous, labelled by elapsed time rather than raw day number:
+
+| Stop | `days_in_shelter` | Weariness band |
+|---|---|---|
+| Week 1 | 3 | (none) |
+| Month 1 | 30 | a little flat |
+| Month 6 | 180 | flat, barely lifting, worn through |
+| Year 2 | 730 | flat, barely lifting, worn through |
+
+**⚠ Unresolved:** Month 6 (180) and Year 2 (730) both fall in the 180+ band, so stops 3 and 4 produce identical prompts — the same collision the fourth band was added to fix, moved one stop later. The 120-179 band ("quiet and tired") is never reached by any stop. Two ways out, human's call:
+
+- **Relabel stop 3 to Month 4** (`days_in_shelter: 120`) → all four stops distinct, all four bands used, every label honest. Recommended.
+- **Keep Month 6 / Year 2** and make the flattening the point: the curve tops out because there is no worse to get. Defensible in the post, but the slider's last drag is silent and a judge may read it as broken.
+
+Stops live in one array in `src/app.js`; changing this is a one-line edit until hero audio is generated. After that it is a re-render.
+
+As the slider moves right the card should visibly cool — this is the one place motion earns its keep.
 
 ---
 
@@ -262,4 +281,7 @@ One line per completed step from §8: what was done, what is verified working.
 - **Step 1 — shared audio element + timestamp swap.** One `<audio id="stage">` for the page; `src/audioBus.js` holds `swapSource()` (§6.1) plus `load()` for dog changes. State is `currentDogId` / `mode` / `heroDay`. **Verified in Chrome:** swap seek error **0.000 s** over three consecutive flat↔designed swaps, ~35 ms load; playback continues across the swap; 5 rapid-fire swaps (the hero-drag case) hold the playhead; changing dog stops and resets to 0. Two bugs found and fixed here: silent-MP3 frame header had the channel-mode bits in the wrong byte (undecodable in Chrome), and `swapSource` read the already-reset `currentTime` during an in-flight swap — now held in `this.pending`. **Confirmed seamless by ear by the human, 2026-08-16.**
 - **Step 2 — `src/voicePrompt.js`.** `buildVoicePrompt(attributes) → string` implements the §6.2 table exactly; `derive()` returns the same mapping with every rule's input and output for the step 3 derivation panel; `buildStayTimeline()` calls `buildVoicePrompt` once per checkpoint so the hero's "one variable moved" claim is enforced by construction rather than asserted. Unknown enum values throw instead of silently producing a voice the record does not support. Pure — no I/O, input not mutated. `package.json` added (`type: module`, `npm test`). **Verified:** 11 tests pass via `npm test`, including the gate (4 records → 4 distinct strings), band edges at 29/30/119/120, purity, and determinism.
   - **Open issue for step 4:** §6.2's weariness rule has no band above 120 days, so hero checkpoints **day 120 and day 214 produce identical prompts** — the slider's last two stops would sound the same, weakening the centrepiece. A test asserts this collision deliberately so it fails loudly if the spec changes. Decision needed from the human before hero audio is generated; a fourth band (e.g. `180+`) is the one-line fix.
+- **Spec change (human, 2026-08-16).** Three amendments applied: §3.3 is now "not one word of the listing text is ours" — first-person shelter copy ships verbatim, and the contrast between upbeat copy and a worn voice becomes the thesis (§2 self-constraint updated to match); §6.2 weariness gains a fourth band (120-179 "quiet and tired", 180+ "flat, barely lifting, worn through"); §6.3 hero slider is reframed as a demonstration of the mapping with stops Week 1 / Month 1 / Month 6 / Year 2, not a claim about a real timeline, because no shelter publishes intake dates. Code and tests updated; 13 tests pass.
+  - **New collision, decision needed:** the chosen stops put Month 6 (180) and Year 2 (730) both in the 180+ band, so the slider's last drag is inaudible and the 120-179 band is never reached. Relabelling stop 3 to **Month 4 (120 days)** gives four distinct stops and uses all four bands. A test asserts both the collision and the fix, so whichever way it goes is enforced. Stops live in `SLIDER_STOPS` in `src/voicePrompt.js` — one-line change until hero audio is generated.
+- **Step 3 — card layout, listing text, derivation panel.** Card renders as a kennel document: mode strip, name, five-field fact list, listing text as a ruled `<blockquote>` with a verbatim-attribution line naming the shelter and capture date, transport controls, then a `<details>` derivation panel. The panel calls `derive()` live — it is not baked into the data — and shows every rule with its input from the record and what it contributed, including rules that fired nothing, then the final Voice Design prompt. **Verified:** all modules parse; `derive()` produces correct per-rule output for all three sample records (checked against §6.2 by hand). **Not yet verified in a browser** — the Chrome extension disconnected mid-session, so the visual gate ("reads like a document") is unconfirmed.
 - **Pre-deploy:** dev scaffolding (swap-check bar, placeholder banner, test tone WAVs, all sample data) must be stripped at step 7 — checklist added under §8.

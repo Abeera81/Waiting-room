@@ -175,8 +175,12 @@ body {
   margin: 0;
 }
 
+/* The listing is quoted material, not our prose. It reads as typed onto the
+   form: indented, ruled off, never restyled into something friendlier. */
 .listing {
-  margin: 0 0 1rem;
+  margin: 0 0 0.6rem;
+  padding: 0 0 0 0.9rem;
+  border-left: 2px solid var(--rule);
   font-weight: 400;
   white-space: pre-wrap;
 }
@@ -184,6 +188,104 @@ body {
 .card[data-mode='designed'] .listing {
   font-weight: 300;
   letter-spacing: 0.015em;
+  border-left-color: var(--warm);
+}
+
+.attribution {
+  margin: 0 0 1rem;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #6b665c;
+}
+
+/* ---- derivation panel --------------------------------------------------- */
+
+.derivation {
+  margin-top: 0.9rem;
+  border-top: 1px solid var(--rule);
+  padding-top: 0.6rem;
+}
+
+.derivation summary {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6b665c;
+  cursor: pointer;
+}
+
+.derivation summary:hover {
+  color: var(--ink);
+}
+
+.rules {
+  width: 100%;
+  margin: 0.7rem 0 0;
+  border-collapse: collapse;
+  font-size: 11px;
+  text-align: left;
+}
+
+.rules th,
+.rules td {
+  padding: 0.3rem 0.5rem 0.3rem 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+  font-weight: 400;
+}
+
+.rules thead th {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6b665c;
+}
+
+.rules tbody th {
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.rules .is-quiet {
+  color: #8a8477;
+}
+
+.rules .dash {
+  font-style: italic;
+}
+
+.derivation__out {
+  margin: 0.7rem 0 0;
+}
+
+.derivation__label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6b665c;
+}
+
+.derivation__out code {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.card[data-mode='designed'] .derivation__out code {
+  border-bottom: 2px solid var(--warm);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .controls {

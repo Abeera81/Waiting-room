@@ -1,4 +1,5 @@
 import { AudioBus, formatTime } from './audioBus.js';
+import { derive } from './voicePrompt.js';
 
 const DATA_URL = 'data/dogs.sample.json';
 
@@ -78,22 +79,28 @@ function renderCard(dog) {
   card.dataset.dogId = dog.id;
   card.dataset.mode = 'flat';
 
+  const a = dog.attributes;
+  const panelId = `derivation-${dog.id}`;
+
   card.innerHTML = `
     <header class="strip">
       <span class="strip__stamp">INTAKE RECORD</span>
-      <span class="strip__meta">${esc(dog.attributes.breed)} · ${esc(dog.attributes.size)}</span>
+      <span class="strip__meta">${esc(a.breed)}</span>
       <span class="on-air" aria-hidden="true"></span>
     </header>
 
     <h2 class="card__name">${esc(dog.name)}</h2>
 
     <dl class="facts">
-      <div><dt>Age</dt><dd>${esc(dog.attributes.age_band)} · ${dog.attributes.age_years}y</dd></div>
-      <div><dt>Intake</dt><dd>${esc(dog.attributes.intake_type.replace(/_/g, ' '))}</dd></div>
-      <div class="facts__days"><dt>Days in shelter</dt><dd>${dog.attributes.days_in_shelter}</dd></div>
+      <div><dt>Age</dt><dd>${esc(a.age_band)} · ${a.age_years}y</dd></div>
+      <div><dt>Size</dt><dd>${esc(a.size)}</dd></div>
+      <div><dt>Intake</dt><dd>${esc(a.intake_type.replace(/_/g, ' '))}</dd></div>
+      <div><dt>Returns</dt><dd>${a.return_count}</dd></div>
+      <div class="facts__days"><dt>Days in shelter</dt><dd>${a.days_in_shelter}</dd></div>
     </dl>
 
-    <p class="listing">${esc(dog.listing_text)}</p>
+    <blockquote class="listing">${esc(dog.listing_text)}</blockquote>
+    <p class="attribution">Listing text reproduced verbatim from ${esc(dog.source.shelter)}, captured ${esc(dog.source.captured)}. Not one word is ours.</p>
 
     <div class="controls">
       <button class="btn btn--play" type="button" data-action="play">Play</button>
@@ -105,6 +112,11 @@ function renderCard(dog) {
     </div>
 
     <p class="src-readout" hidden><span class="src-readout__label">now playing</span> <code></code></p>
+
+    <details class="derivation">
+      <summary aria-controls="${panelId}">How this voice was derived</summary>
+      <div id="${panelId}">${renderDerivation(a)}</div>
+    </details>
   `;
 
   const playBtn = card.querySelector('[data-action="play"]');
@@ -132,6 +144,35 @@ function renderCard(dog) {
 
   cards.set(dog.id, { el: card, dog, playBtn, modeBtns });
   return card;
+}
+
+/**
+ * The derivation panel: every rule, its input from the record, and what it
+ * contributed. Rules that did not fire are shown too — the reader should be
+ * able to check the voice against the record rather than take it on trust.
+ */
+function renderDerivation(attributes) {
+  const { steps, prompt } = derive(attributes);
+
+  const rows = steps
+    .map(
+      (step) => `
+      <tr class="${step.fired ? '' : 'is-quiet'}">
+        <th scope="row">${esc(step.id)}</th>
+        <td>${esc(step.attribute)} = <b>${esc(step.input)}</b></td>
+        <td>${step.fired ? esc(step.value) : '<span class="dash">— nothing</span>'}</td>
+      </tr>`
+    )
+    .join('');
+
+  return `
+    <table class="rules">
+      <caption class="visually-hidden">Mapping from shelter record to voice prompt</caption>
+      <thead><tr><th scope="col">Rule</th><th scope="col">From the record</th><th scope="col">Adds</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <p class="derivation__out"><span class="derivation__label">Voice Design prompt</span><code>${esc(prompt)}</code></p>
+  `;
 }
 
 function selectDog(dog, mode = state.mode) {
