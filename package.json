@@ -6,7 +6,6 @@
   "type": "module",
   "scripts": {
     "start": "node tools/serve.js 8124",
-    "test": "node --test tests/*.test.mjs",
-    "audio:placeholders": "python tools/make_placeholder_audio.py"
+    "test": "node --test tests/*.test.mjs"
   }
 }

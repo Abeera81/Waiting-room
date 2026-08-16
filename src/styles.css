@@ -37,38 +37,25 @@ body {
   outline-offset: 2px;
 }
 
-/* ---- dev affordances ---------------------------------------------------- */
-
-.banner,
-.swap-check {
-  max-width: var(--measure);
-  margin: 0 auto var(--step);
-  padding: 0.5rem 0.75rem;
-  border: 1px dashed var(--on-air);
-  font-size: 12px;
-  letter-spacing: 0.02em;
-}
-
-.swap-check {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-  border-style: dotted;
-  border-color: var(--rule);
-}
-
-.swap-check__label {
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #6b665c;
-}
-
-.swap-check__src,
 .src-readout code {
   font-size: 11px;
   color: #6b665c;
   overflow-wrap: anywhere;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  padding: 0.5rem 0.8rem;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 12px;
+}
+
+.skip-link:focus {
+  left: var(--step);
+  top: var(--step);
+  z-index: 10;
 }
 
 /* ---- masthead ----------------------------------------------------------- */
@@ -103,6 +90,25 @@ body {
   margin: 0 auto;
 }
 
+/* Above 900px the single column wastes the viewport and makes eight dogs a long
+   scroll. Two columns, hero full-width — it carries the slider and needs room. */
+@media (min-width: 900px) {
+  .masthead,
+  .colophon {
+    max-width: 78rem;
+  }
+
+  .shelf {
+    grid-template-columns: 1fr 1fr;
+    max-width: 78rem;
+    align-items: start;
+  }
+
+  .card.is-hero {
+    grid-column: 1 / -1;
+  }
+}
+
 .card {
   border: 1px solid var(--rule);
   padding: var(--step);
@@ -130,16 +136,40 @@ body {
   letter-spacing: 0.04em;
 }
 
+/* The one place --on-air is allowed to appear (§7). Lit in designed mode;
+   pulsing only while that reading is actually playing. */
 .on-air {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border: 1px solid var(--rule);
   border-radius: 50%;
+  transition: background 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
 }
 
-.card.is-playing .on-air {
+.card[data-mode='designed'] .on-air {
   background: var(--on-air);
   border-color: var(--on-air);
+  box-shadow: 0 0 0 3px rgba(216, 68, 47, 0.18);
+}
+
+.card[data-mode='designed'].is-playing .on-air {
+  animation: on-air-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes on-air-pulse {
+  50% {
+    box-shadow: 0 0 0 6px rgba(216, 68, 47, 0.08);
+  }
+}
+
+/* The strip carries the same signal as a word, for anyone who can't see the dot. */
+.strip__live {
+  color: var(--on-air);
+  letter-spacing: 0.14em;
+}
+
+.card:not([data-mode='designed']) .strip__live {
+  visibility: hidden;
 }
 
 .card__name {
@@ -181,6 +211,10 @@ body {
   margin: 0 0 0.6rem;
   padding: 0 0 0 0.9rem;
   border-left: 2px solid var(--rule);
+  /* Larger and looser than the fact row: these are the words the voice reads,
+     so the eye should land here and not on the metadata. */
+  font-size: 16px;
+  line-height: 1.7;
   font-weight: 400;
   white-space: pre-wrap;
 }
@@ -454,6 +488,25 @@ body {
   *::before,
   *::after {
     animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* The on-air dot stays lit — it carries state, so it must not be animated away. */
+  .card[data-mode='designed'] .on-air {
+    animation: none;
+  }
+}
+
+/* Touch targets and a full-width transport on a phone. */
+@media (max-width: 420px) {
+  .btn {
+    padding: 0.55rem 0.75rem;
+  }
+
+  .clock {
+    width: 100%;
+    margin-left: 0;
   }
 }

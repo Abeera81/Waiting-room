@@ -120,6 +120,21 @@ test('each slider stop lands in a different weariness band', () => {
   assert.equal(new Set(bands).size, STOPS.length, `bands hit: ${bands.join(' | ')}`);
 });
 
+test('days_in_shelter "unknown" is valid and contributes nothing', () => {
+  // The real case for every dog: no shelter publishes an intake date. We must
+  // not guess a wait, and we must not crash on its absence.
+  const prompt = buildVoicePrompt(dog({ days_in_shelter: 'unknown' }));
+  assert.ok(!/flat|tired|worn through/.test(prompt));
+  const weariness = derive(dog({ days_in_shelter: 'unknown' })).steps.find((s) => s.id === 'WEARINESS');
+  assert.equal(weariness.fired, false);
+  assert.equal(weariness.input, 'unknown');
+});
+
+test('a missing days_in_shelter still throws — unknown is a value, not a gap', () => {
+  assert.throws(() => buildVoicePrompt(dog({ days_in_shelter: null })), /required/);
+  assert.throws(() => buildVoicePrompt(dog({ days_in_shelter: 'a while' })), /days_in_shelter/);
+});
+
 test('intake_type "unknown" is valid and contributes nothing', () => {
   // Six of the eight real dogs have no published surrender reason. That must
   // not throw, and must not invent a strain the record does not state.

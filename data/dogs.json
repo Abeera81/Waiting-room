@@ -1,0 +1,214 @@
+{
+  "_note": "Listing text is verbatim from the source pages, human-verified, captured 2026-08-16. Never edit, paraphrase, or clean it. days_in_shelter is \"unknown\" for every dog because no shelter publishes an intake date.",
+  "dogs": [
+    {
+      "id": "yuji",
+      "name": "Yuji",
+      "hero": true,
+      "listing_text": "Hey there, I'm Yuji! I've been with Better World Rescue for way too long, waiting for my forever home. I'm a big goofy senior who loves grassy yards, zoomies, and couch cuddles. My journey hasn't been easy — I was hit by a car and surrendered by my old family. After years of waiting, could you be the one to say \"Welcome home, Yuji\"?",
+      "attributes": {
+        "age_years": null,
+        "age_band": "senior",
+        "breed": "American Staffordshire Terrier & Labrador Retriever Mix",
+        "size": "large",
+        "sex": "male",
+        "intake_type": "owner_surrender",
+        "days_in_shelter": "unknown",
+        "return_count": 0,
+        "medical_note": null,
+        "behaviour_notes": ["good_with_kids", "no_dogs", "no_cats", "house_trained"]
+      },
+      "shelter_note": "The rescue's longest resident. Adoption fee reduced to $20.",
+      "audio": { "flat": "public/audio/yuji_flat.mp3", "designed": "public/audio/yuji_designed.mp3" },
+      "timeline": [
+        { "label": "Week 1", "days": 3, "audio": "public/audio/yuji_d003.mp3" },
+        { "label": "Month 1", "days": 30, "audio": "public/audio/yuji_d030.mp3" },
+        { "label": "Month 4", "days": 120, "audio": "public/audio/yuji_d120.mp3" },
+        { "label": "Year 2", "days": 730, "audio": "public/audio/yuji_d730.mp3" }
+      ],
+      "source": {
+        "shelter": "Better World Rescue, Tracy CA",
+        "captured": "2026-08-16",
+        "url": "https://www.petfinder.com/dog/yuji-longest-resident-56f22c14-934d-42b0-8563-e46a23b482a5/ca/tracy/better-world-rescue-ca3048/details/"
+      }
+    },
+    {
+      "id": "paddington",
+      "name": "Paddington",
+      "hero": false,
+      "listing_text": "Paddington is on the lookout for his forever home after being returned through no fault of his own — turns out he prefers to be the only canine star of the show. He's incredibly sweet, smart, and highly food motivated. Make eye contact with him and he's already rolled onto his back, presenting his signature Pooh Bear Belly.",
+      "attributes": {
+        "age_years": 5,
+        "age_band": "adult",
+        "breed": "German Shepherd Mix",
+        "size": "large",
+        "sex": "male",
+        "intake_type": "returned",
+        "days_in_shelter": "unknown",
+        "return_count": 1,
+        "medical_note": null,
+        "behaviour_notes": ["good_with_kids", "no_dogs", "maybe_cats"]
+      },
+      "shelter_note": "Date of birth 2021-06-26.",
+      "audio": {
+        "flat": "public/audio/paddington_flat.mp3",
+        "designed": "public/audio/paddington_designed.mp3"
+      },
+      "source": {
+        "shelter": "Catering to Cats & Dogs Inc, Charlotte NC",
+        "captured": "2026-08-16",
+        "url": "https://www.petfinder.com/dog/paddington-a72bdf20-d35f-4224-a3a7-ea2eead8c1df/nc/charlotte/catering-to-cats-dogs-inc-nc626/details/"
+      }
+    },
+    {
+      "id": "sunbear",
+      "name": "Sun Bear",
+      "hero": false,
+      "listing_text": "I am a sensitive and shy pup. I can be worried about new people, new surroundings and touch. I prefer to take things at my own pace and will need to go home to a calm environment.",
+      "attributes": {
+        "age_years": 0.25,
+        "age_band": "puppy",
+        "breed": "American Pit Bull",
+        "size": "medium",
+        "sex": "female",
+        "intake_type": "unknown",
+        "days_in_shelter": "unknown",
+        "return_count": 0,
+        "medical_note": null,
+        "behaviour_notes": []
+      },
+      "shelter_note": "29 lb.",
+      "audio": { "flat": "public/audio/sunbear_flat.mp3", "designed": "public/audio/sunbear_designed.mp3" },
+      "source": {
+        "shelter": "Oregon Humane Society, Portland OR",
+        "captured": "2026-08-16",
+        "url": "https://www.oregonhumane.org/adopt/details/352536"
+      }
+    },
+    {
+      "id": "sterling",
+      "name": "Sterling",
+      "hero": false,
+      "listing_text": "I may be shy at first, but once we get to know each other I will shower you with love! I do my best to make it super-duper hard for you to leave every cuddle session. I can be worried about new people, new surroundings and touch. I need to go to an adult only home.",
+      "attributes": {
+        "age_years": 8,
+        "age_band": "senior",
+        "breed": "Chihuahua",
+        "size": "small",
+        "sex": "male",
+        "intake_type": "unknown",
+        "days_in_shelter": "unknown",
+        "return_count": 0,
+        "medical_note": null,
+        "behaviour_notes": []
+      },
+      "shelter_note": "13.4 lb.",
+      "audio": { "flat": "public/audio/sterling_flat.mp3", "designed": "public/audio/sterling_designed.mp3" },
+      "source": {
+        "shelter": "Oregon Humane Society, Portland OR",
+        "captured": "2026-08-16",
+        "url": "https://www.oregonhumane.org/adopt/details/352928"
+      }
+    },
+    {
+      "id": "buck",
+      "name": "Buck",
+      "hero": false,
+      "listing_text": "I came all the way to OHS through the Second Chance Program. New things are a little scary to me, but all I need is time and someone to show me it's okay. I may be little but I have infinite love to give you! I have a history of escaping doors or fences.",
+      "attributes": {
+        "age_years": 1,
+        "age_band": "young",
+        "breed": "Chihuahua",
+        "size": "small",
+        "sex": "male",
+        "intake_type": "unknown",
+        "days_in_shelter": "unknown",
+        "return_count": 0,
+        "medical_note": null,
+        "behaviour_notes": []
+      },
+      "shelter_note": "11 lb.",
+      "audio": { "flat": "public/audio/buck_flat.mp3", "designed": "public/audio/buck_designed.mp3" },
+      "source": {
+        "shelter": "Oregon Humane Society, Portland OR",
+        "captured": "2026-08-16",
+        "url": "https://www.oregonhumane.org/adopt/details/354054"
+      }
+    },
+    {
+      "id": "moose",
+      "name": "Moose",
+      "hero": false,
+      "listing_text": "I am a big powerful dude with a lot of puppy left in me, so I need a family where all members can handle my size and playful attitude. I have been diagnosed with ringworm. This will require continued treatment and isolation from other animals and children. I have chronic skin issues which will require long term management.",
+      "attributes": {
+        "age_years": 1.25,
+        "age_band": "young",
+        "breed": "Chesapeake Bay Retriever & American Pit Bull Terrier",
+        "size": "large",
+        "sex": "male",
+        "intake_type": "unknown",
+        "days_in_shelter": "unknown",
+        "return_count": 0,
+        "medical_note": "Ringworm; chronic skin issues.",
+        "behaviour_notes": []
+      },
+      "shelter_note": "78 lb.",
+      "audio": { "flat": "public/audio/moose_flat.mp3", "designed": "public/audio/moose_designed.mp3" },
+      "source": {
+        "shelter": "Oregon Humane Society, Portland OR",
+        "captured": "2026-08-16",
+        "url": "https://www.oregonhumane.org/adopt/details/331697"
+      }
+    },
+    {
+      "id": "ponyboy",
+      "name": "Ponyboy",
+      "hero": false,
+      "listing_text": "I may be shy at first, but once we get to know each other I will shower you with love! I am a mellow fellow. All I need is a soft warm place to lay, and to be told I am the goodest boy. I can be worried about new people, new surroundings and touch.",
+      "attributes": {
+        "age_years": 3,
+        "age_band": "adult",
+        "breed": "Anatolian Shepherd",
+        "size": "large",
+        "sex": "male",
+        "intake_type": "unknown",
+        "days_in_shelter": "unknown",
+        "return_count": 0,
+        "medical_note": null,
+        "behaviour_notes": []
+      },
+      "shelter_note": "77 lb.",
+      "audio": { "flat": "public/audio/ponyboy_flat.mp3", "designed": "public/audio/ponyboy_designed.mp3" },
+      "source": {
+        "shelter": "Oregon Humane Society, Portland OR",
+        "captured": "2026-08-16",
+        "url": "https://www.oregonhumane.org/adopt/details/353711"
+      }
+    },
+    {
+      "id": "hart",
+      "name": "Hart",
+      "hero": false,
+      "listing_text": "I really enjoy the company of my human friends. I may be shy at first, but once we get to know each other I will shower you with love! All I need is a soft warm place to lay, and to be told I am the goodest boy. I already know how to sit and I walk lovely on leash!",
+      "attributes": {
+        "age_years": 9.25,
+        "age_band": "senior",
+        "breed": "American Pit Bull",
+        "size": "large",
+        "sex": "male",
+        "intake_type": "unknown",
+        "days_in_shelter": "unknown",
+        "return_count": 0,
+        "medical_note": null,
+        "behaviour_notes": []
+      },
+      "shelter_note": "65 lb.",
+      "audio": { "flat": "public/audio/hart_flat.mp3", "designed": "public/audio/hart_designed.mp3" },
+      "source": {
+        "shelter": "Oregon Humane Society, Portland OR",
+        "captured": "2026-08-16",
+        "url": "https://www.oregonhumane.org/adopt/details/353333"
+      }
+    }
+  ]
+}

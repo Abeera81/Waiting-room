@@ -2,7 +2,7 @@ import { AudioBus, formatTime } from './audioBus.js';
 import { derive } from './voicePrompt.js';
 import { findSharedSentences } from './sharedText.js';
 
-const DATA_URL = 'data/dogs.sample.json';
+const DATA_URL = 'data/dogs.json';
 
 const state = {
   dogs: [],
@@ -29,8 +29,6 @@ async function boot() {
   // Derived from the listings themselves — see src/sharedText.js.
   state.shared = findSharedSentences(state.dogs).byDog;
 
-  if (data._placeholder) document.getElementById('placeholder-banner').hidden = false;
-
   for (const dog of state.dogs) shelf.append(renderCard(dog));
 
   // The hero card opens at stop 0, so its derivation and tick must agree.
@@ -38,42 +36,6 @@ async function boot() {
   if (hero) updateStay(hero, 0);
 
   bus.subscribe(syncTransport);
-  wireSwapCheck();
-}
-
-/**
- * Dev-only rig. The sample MP3s are silent, so the swap can't be judged by ear
- * against them; these two tones exercise the exact same code path audibly.
- * Delete along with the placeholder banner when real audio lands.
- */
-function wireSwapCheck() {
-  const bar = document.getElementById('swap-check');
-  if (!bar) return;
-  const toggle = bar.querySelector('[data-action="check-play"]');
-
-  toggle.addEventListener('click', () => {
-    if (!String(bus.currentSrc || '').includes('test_tone')) {
-      state.currentDogId = null;
-      bus.load('public/audio/test_tone_low.wav');
-      syncTransport();
-    }
-    bus.toggle();
-    toggle.textContent = bus.playing ? 'Pause tone' : 'Play tone';
-  });
-
-  for (const btn of bar.querySelectorAll('[data-action="check-swap"]')) {
-    btn.addEventListener('click', () => {
-      bus.swapSource(`public/audio/test_tone_${btn.dataset.tone}.wav`);
-      bar.querySelector('.swap-check__src').textContent = bus.currentSrc;
-    });
-  }
-
-  bus.subscribe(() => {
-    toggle.textContent = bus.playing && String(bus.currentSrc || '').includes('test_tone')
-      ? 'Pause tone'
-      : 'Play tone';
-    bar.querySelector('.swap-check__clock').textContent = formatTime(bus.position);
-  });
 }
 
 /** Which file should be playing, given the current dog / mode / hero day. */
@@ -86,7 +48,7 @@ function sourceFor(dog, mode = state.mode, stopIndex = state.heroStop) {
 
 function renderCard(dog) {
   const card = document.createElement('article');
-  card.className = 'card';
+  card.className = dog.hero ? 'card is-hero' : 'card';
   card.dataset.dogId = dog.id;
   card.dataset.mode = 'flat';
 
@@ -97,21 +59,27 @@ function renderCard(dog) {
     <header class="strip">
       <span class="strip__stamp">INTAKE RECORD</span>
       <span class="strip__meta">${esc(a.breed)}</span>
+      <span class="strip__live">ON AIR</span>
       <span class="on-air" aria-hidden="true"></span>
     </header>
 
     <h2 class="card__name">${esc(dog.name)}</h2>
 
     <dl class="facts">
-      <div><dt>Age</dt><dd>${esc(a.age_band)} · ${a.age_years}y</dd></div>
+      <div><dt>Age</dt><dd>${esc(a.age_band)}${a.age_years == null ? '' : ` · ${formatAge(a.age_years)}`}</dd></div>
+      <div><dt>Sex</dt><dd>${esc(a.sex ?? 'unknown')}</dd></div>
       <div><dt>Size</dt><dd>${esc(a.size)}</dd></div>
-      <div><dt>Intake</dt><dd>${esc(a.intake_type.replace(/_/g, ' '))}</dd></div>
+      <div><dt>Intake</dt><dd>${esc(String(a.intake_type).replace(/_/g, ' '))}</dd></div>
       <div><dt>Returns</dt><dd>${a.return_count}</dd></div>
-      <div class="facts__days"><dt>Days in shelter</dt><dd>${a.days_in_shelter}</dd></div>
+      <div class="facts__days"><dt>Days in shelter</dt><dd>${esc(a.days_in_shelter)}</dd></div>
     </dl>
 
     <blockquote class="listing">${esc(dog.listing_text)}</blockquote>
-    <p class="attribution">Listing text reproduced verbatim from ${esc(dog.source.shelter)}, captured ${esc(dog.source.captured)}. Not one word is ours.</p>
+    <p class="attribution">
+      Verbatim from <a href="${esc(dog.source.url)}" target="_blank" rel="noopener noreferrer">${esc(dog.source.shelter)}</a>, captured ${esc(dog.source.captured)}. Not one word is ours.
+      ${a.medical_note ? `<span class="attribution__flag">Medical: ${esc(a.medical_note)}</span>` : ''}
+      ${dog.shelter_note ? `<span class="attribution__flag">${esc(dog.shelter_note)}</span>` : ''}
+    </p>
 
     ${renderShared(dog)}
     ${dog.hero ? renderSlider(dog) : ''}
@@ -127,7 +95,7 @@ function renderCard(dog) {
 
     <p class="src-readout" hidden><span class="src-readout__label">now playing</span> <code></code></p>
 
-    <details class="derivation">
+    <details class="derivation"${dog.hero ? ' open' : ''}>
       <summary aria-controls="${panelId}">How this voice was derived</summary>
       <div id="${panelId}">${renderDerivation(a)}</div>
     </details>
@@ -342,6 +310,14 @@ function syncTransport() {
     el.querySelector('.src-readout code').textContent = active ? bus.currentSrc : '—';
     el.querySelector('.src-readout').hidden = !active;
   }
+}
+
+/** 0.25 → "3m", 1.25 → "1y 3m", 8 → "8y". Shelters state ages this way. */
+function formatAge(years) {
+  const whole = Math.floor(years);
+  const months = Math.round((years - whole) * 12);
+  if (whole === 0) return `${months}m`;
+  return months ? `${whole}y ${months}m` : `${whole}y`;
 }
 
 function esc(value) {

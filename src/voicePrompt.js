@@ -14,6 +14,12 @@
  * Pure: no I/O, no randomness, no mutation of the input.
  */
 
+/**
+ * The value shelters publish most often: nothing. Valid input for any rule,
+ * fires no modifier. Distinct from missing data, which throws.
+ */
+export const UNKNOWN = 'unknown';
+
 /** Ordered because the output reads as a sentence: what it is, then what it carries. */
 export const RULES = [
   {
@@ -127,8 +133,15 @@ function pick(rule, input) {
     return { value, fired: value !== null };
   }
 
+  // No shelter publishes an intake date, so the real answer for a real dog is
+  // usually "unknown". That is a value, not missing data, and it fires nothing:
+  // we will not guess how long an animal has waited.
+  if (input === UNKNOWN) return { value: null, fired: false };
+
   if (typeof input !== 'number' || !Number.isFinite(input) || input < 0) {
-    throw new Error(`buildVoicePrompt: ${rule.attribute} must be a non-negative number, got ${input}`);
+    throw new Error(
+      `buildVoicePrompt: ${rule.attribute} must be a non-negative number or "${UNKNOWN}", got ${input}`
+    );
   }
   const band = rule.bands.find((b) => input <= b.max);
   return { value: band.value, fired: band.value !== null };

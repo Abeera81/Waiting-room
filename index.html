@@ -17,32 +17,39 @@
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
-    <div id="placeholder-banner" class="banner" role="status" hidden>
-      <strong>PLACEHOLDER DATA.</strong> These dogs are not real and this audio is silent.
-      Development build only.
-    </div>
-
-    <div id="swap-check" class="swap-check">
-      <span class="swap-check__label">swap check</span>
-      <button class="btn" type="button" data-action="check-play">Play tone</button>
-      <button class="btn" type="button" data-action="check-swap" data-tone="low">220 Hz</button>
-      <button class="btn" type="button" data-action="check-swap" data-tone="high">660 Hz</button>
-      <span class="swap-check__clock">00:00</span>
-      <code class="swap-check__src">—</code>
-    </div>
+    <a class="skip-link" href="#shelf">Skip to the listings</a>
 
     <header class="masthead">
       <h1>The Waiting Room</h1>
       <p class="masthead__thesis">
-        A shelter listing is a document. Read flat, it tells you almost nothing. Every voice here is
-        generated from the record itself — the same words, twice.
+        Eight real shelter dogs. Every listing is read twice — once by a flat institutional voice,
+        once by a voice generated from that dog's own record. Not one word of the text is ours.
+      </p>
+      <p class="masthead__note">
+        The shelters write from a template: the same sentences appear in listing after listing.
+        Where two dogs share a sentence, you can hear both read it.
       </p>
     </header>
 
-    <main id="shelf" class="shelf"></main>
+    <main id="shelf" class="shelf" tabindex="-1"></main>
 
     <footer class="colophon">
-      <p>Built for the DEV Weekend Challenge: Dog Days Edition. Audio pre-generated with ElevenLabs Voice Design.</p>
+      <p>
+        The <b>flat</b> reading is ElevenLabs' stock voice &ldquo;Roger&rdquo; &mdash; described by
+        ElevenLabs as charismatic, positive and conversational. It is not a monotone robot; it is the
+        upbeat register shelter marketing is written in. The <b>designed</b> reading was generated
+        with ElevenLabs Voice Design from a prompt built by <code>buildVoicePrompt()</code>, which
+        reads the shelter's own record. Both use Eleven Multilingual v2. The contrast is one of tone,
+        not of expressiveness.
+      </p>
+      <p>
+        Audio is pre-generated and committed, so the page makes no API calls and holds no keys.
+      </p>
+      <p>
+        Listing text is reproduced verbatim and was captured 2026-08-16; these dogs may already be
+        adopted. The voices are an interpretation of a record, not a measurement of an animal.
+      </p>
+      <p>Built for the DEV Weekend Challenge: Dog Days Edition.</p>
     </footer>
 
     <!-- One shared element for the whole page. See src/audioBus.js. -->
