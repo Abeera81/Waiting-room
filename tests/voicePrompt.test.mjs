@@ -98,29 +98,34 @@ test('derive shows every rule, fired or not', () => {
 test('the slider demo moves exactly one variable', () => {
   const hero = dog({ age_band: 'adult', size: 'medium', intake_type: 'stray', days_in_shelter: 3 });
   const timeline = buildStayTimeline(hero, STOPS);
-  assert.deepEqual(timeline.map((t) => t.label), ['Week 1', 'Month 1', 'Month 6', 'Year 2']);
+  assert.deepEqual(timeline.map((t) => t.label), ['Week 1', 'Month 1', 'Month 4', 'Year 2']);
   // Each stop must equal the base function called with only days_in_shelter changed.
   for (const stop of timeline) {
     assert.equal(stop.prompt, buildVoicePrompt({ ...hero, days_in_shelter: stop.days }));
   }
 });
 
-test('KNOWN GAP: stops Month 6 and Year 2 still collide', () => {
-  // Both land in the 180+ band, so the slider's last drag changes nothing.
-  // Asserted deliberately so it fails loudly the moment the stops change.
-  // Fix is to relabel stop 3 to Month 4 (120 days). See §6.3.
-  const [, , third, fourth] = buildStayTimeline(dog({}), STOPS);
-  assert.equal(third.prompt, fourth.prompt);
+test('every slider stop is audibly different from the last', () => {
+  // The centrepiece fails quietly if two stops share a weariness band: the
+  // drag happens and nothing changes. Guard it.
+  const prompts = buildStayTimeline(dog({}), STOPS).map((s) => s.prompt);
+  assert.equal(new Set(prompts).size, STOPS.length);
 });
 
-test('the recommended stops would produce four distinct prompts', () => {
-  // Evidence for the §6.3 recommendation: Month 4 instead of Month 6.
-  const alt = [
-    { label: 'Week 1', days: 3 },
-    { label: 'Month 1', days: 30 },
-    { label: 'Month 4', days: 120 },
-    { label: 'Year 2', days: 730 },
-  ];
-  const prompts = buildStayTimeline(dog({}), alt).map((s) => s.prompt);
-  assert.equal(new Set(prompts).size, 4);
+test('each slider stop lands in a different weariness band', () => {
+  const bands = STOPS.map(({ days }) => {
+    const step = derive(dog({ days_in_shelter: days })).steps.find((s) => s.id === 'WEARINESS');
+    return String(step.value);
+  });
+  assert.equal(new Set(bands).size, STOPS.length, `bands hit: ${bands.join(' | ')}`);
+});
+
+test('intake_type "unknown" is valid and contributes nothing', () => {
+  // Six of the eight real dogs have no published surrender reason. That must
+  // not throw, and must not invent a strain the record does not state.
+  const prompt = buildVoicePrompt(dog({ intake_type: 'unknown' }));
+  assert.ok(!/watchful|resigned|uncertain/.test(prompt));
+  const strain = derive(dog({ intake_type: 'unknown' })).steps.find((s) => s.id === 'STRAIN');
+  assert.equal(strain.fired, false);
+  assert.equal(strain.input, 'unknown');
 });

@@ -6,7 +6,7 @@
       "id": "sample-a",
       "name": "PLACEHOLDER-A",
       "hero": false,
-      "listing_text": "SAMPLE DATA — NOT A REAL LISTING. Placeholder paragraph standing in for verbatim shelter text so the card layout has something of roughly the right length to hold. This animal does not exist. Do not read anything into it.",
+      "listing_text": "SAMPLE DATA — NOT A REAL LISTING. Placeholder paragraph standing in for verbatim shelter text so the card layout has something of roughly the right length to hold. Shy and Nervous: I can be worried about new people, new surroundings and touch. I prefer to take things at my own pace and will need to live in a calm environment. This animal does not exist. Do not read anything into it.",
       "attributes": {
         "age_years": 9,
         "age_band": "senior",
@@ -54,13 +54,13 @@
       "id": "sample-hero",
       "name": "PLACEHOLDER-HERO",
       "hero": true,
-      "listing_text": "SAMPLE DATA — NOT A REAL LISTING. Placeholder text for the hero card, which carries the stay slider. Long enough that a listener can hear the voice change part-way through a sentence rather than between them. This animal does not exist.",
+      "listing_text": "SAMPLE DATA — NOT A REAL LISTING. Placeholder text for the hero card, which carries the stay slider. Shy and Nervous: I can be worried about new people, new surroundings and touch. I prefer to take things at my own pace and will need to live in a calm environment. Long enough that a listener can hear the voice change part-way through a sentence rather than between them. This animal does not exist.",
       "attributes": {
         "age_years": 4,
         "age_band": "adult",
         "breed": "PLACEHOLDER Shepherd Mix",
         "size": "medium",
-        "intake_type": "stray",
+        "intake_type": "unknown",
         "days_in_shelter": 214,
         "return_count": 0,
         "medical_note": null,
@@ -73,26 +73,10 @@
         "designed": "public/audio/sample_hero_designed.mp3"
       },
       "timeline": [
-        {
-          "day": 1,
-          "voice_prompt": "PLACEHOLDER even, steady, measured, watchful",
-          "audio": "public/audio/sample_hero_d001.mp3"
-        },
-        {
-          "day": 30,
-          "voice_prompt": "PLACEHOLDER even, steady, measured, a little flat, watchful",
-          "audio": "public/audio/sample_hero_d030.mp3"
-        },
-        {
-          "day": 120,
-          "voice_prompt": "PLACEHOLDER even, steady, measured, quiet and tired, watchful",
-          "audio": "public/audio/sample_hero_d120.mp3"
-        },
-        {
-          "day": 214,
-          "voice_prompt": "PLACEHOLDER even, steady, measured, quiet and tired, watchful",
-          "audio": "public/audio/sample_hero_d214.mp3"
-        }
+        { "label": "Week 1", "days": 3, "audio": "public/audio/sample_hero_d003.mp3" },
+        { "label": "Month 1", "days": 30, "audio": "public/audio/sample_hero_d030.mp3" },
+        { "label": "Month 4", "days": 120, "audio": "public/audio/sample_hero_d120.mp3" },
+        { "label": "Year 2", "days": 730, "audio": "public/audio/sample_hero_d730.mp3" }
       ],
       "source": { "shelter": "PLACEHOLDER SHELTER", "captured": "2026-08-16" }
     }

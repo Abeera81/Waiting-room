@@ -71,6 +71,10 @@ export const RULES = [
       stray: 'watchful',
       owner_surrender: 'resigned',
       returned: 'uncertain',
+      // Most shelters do not publish why an animal arrived. "unknown" is a
+      // real value in the data, not missing data, and it contributes nothing —
+      // we do not guess a strain the record does not state.
+      unknown: null,
     },
   },
 ];
@@ -136,13 +140,13 @@ function pick(rule, input) {
  * Labelled by elapsed time because the raw day number would imply we know how
  * long the dog has waited. We do not — no shelter publishes intake dates.
  *
- * KNOWN: Month 6 (180) and Year 2 (730) share the 180+ band, so the last drag
- * is inaudible. Relabelling stop 3 to Month 4 / 120 fixes it. Pending decision.
+ * Chosen so each stop lands in a different weariness band: every band the
+ * function can reach is audible on the slider, and no drag is silent.
  */
 export const SLIDER_STOPS = [
   { label: 'Week 1', days: 3 },
   { label: 'Month 1', days: 30 },
-  { label: 'Month 6', days: 180 },
+  { label: 'Month 4', days: 120 },
   { label: 'Year 2', days: 730 },
 ];
 

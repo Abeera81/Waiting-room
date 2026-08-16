@@ -198,6 +198,106 @@ body {
   color: #6b665c;
 }
 
+/* ---- shared text -------------------------------------------------------- */
+
+.shared {
+  margin: 0 0 1rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--rule);
+  background: rgba(184, 176, 160, 0.14);
+}
+
+.shared__label {
+  margin: 0 0 0.4rem;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6b665c;
+}
+
+.shared__text {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.shared__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.btn--compare {
+  font-size: 11px;
+}
+
+/* ---- stay slider -------------------------------------------------------- */
+
+.slider {
+  margin: 0 0 1rem;
+  padding: 0.8rem;
+  border: 1px solid var(--rule);
+}
+
+.slider__label {
+  margin: 0 0 0.7rem;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #6b665c;
+}
+
+.slider__label code {
+  font-size: 11px;
+  color: var(--ink);
+}
+
+.slider__caveat {
+  display: block;
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
+.slider__input {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--ink);
+}
+
+.slider__ticks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.3rem;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b665c;
+}
+
+.slider__tick.is-on {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.slider__readout {
+  margin: 0.6rem 0 0;
+  font-size: 12px;
+  color: #6b665c;
+}
+
+.slider__days {
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+/* The card cools as the stay lengthens — the one place motion earns its keep.
+   --stay runs 0..1 and is set by updateStay(). */
+.card[data-mode='designed'] .slider {
+  background: color-mix(in srgb, var(--warm) calc((1 - var(--stay, 0)) * 18%), transparent);
+  transition: background 320ms ease;
+}
+
 /* ---- derivation panel --------------------------------------------------- */
 
 .derivation {

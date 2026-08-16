@@ -32,11 +32,11 @@ SILENT_FILES = [
     "sample_b_designed.mp3",
     "sample_hero_flat.mp3",
     "sample_hero_designed.mp3",
-    # Hero stay-slider checkpoints (step 4 builds against these).
-    "sample_hero_d001.mp3",
+    # Hero stay-slider stops — Week 1 / Month 1 / Month 4 / Year 2 (§6.3).
+    "sample_hero_d003.mp3",
     "sample_hero_d030.mp3",
     "sample_hero_d120.mp3",
-    "sample_hero_d214.mp3",
+    "sample_hero_d730.mp3",
 ]
 
 # Audible pair so the timestamp-preserving swap can be verified by ear.

@@ -102,17 +102,19 @@ Search. Filters. Sort. Pagination. Favourites. Dark mode. Share buttons. A shelt
 {
   "hero": true,
   "timeline": [
-    { "day": 1,   "voice_prompt": "...", "audio": "audio/hero_d001.mp3" },
-    { "day": 30,  "voice_prompt": "...", "audio": "audio/hero_d030.mp3" },
-    { "day": 120, "voice_prompt": "...", "audio": "audio/hero_d120.mp3" },
-    { "day": 214, "voice_prompt": "...", "audio": "audio/hero_d214.mp3" }
+    { "label": "Week 1",  "days": 3,   "audio": "audio/hero_d003.mp3" },
+    { "label": "Month 1", "days": 30,  "audio": "audio/hero_d030.mp3" },
+    { "label": "Month 4", "days": 120, "audio": "audio/hero_d120.mp3" },
+    { "label": "Year 2",  "days": 730, "audio": "audio/hero_d730.mp3" }
   ]
 }
 ```
 
-The hero's four prompts come from calling the **same mapping function** with `days_in_shelter` set to 1, 30, 120, 214. One variable moved. Say this in the post.
+The four prompts come from calling the **same mapping function** with `days_in_shelter` set to 3, 30, 120, 730 — one variable moved, everything else held fixed. Stops are labelled by elapsed time, never by a real intake date, because none is published (§6.3). Say this in the post.
 
-`age_band` ∈ puppy|young|adult|senior · `size` ∈ small|medium|large · `intake_type` ∈ stray|owner_surrender|returned
+`age_band` ∈ puppy|young|adult|senior · `size` ∈ small|medium|large · `intake_type` ∈ stray|owner_surrender|returned|**unknown**
+
+`intake_type: "unknown"` is the common case — most shelters do not publish why an animal arrived. It is a real value, not missing data, and it contributes no modifier.
 
 ---
 
@@ -166,15 +168,10 @@ Four discrete stops, not continuous, labelled by elapsed time rather than raw da
 |---|---|---|
 | Week 1 | 3 | (none) |
 | Month 1 | 30 | a little flat |
-| Month 6 | 180 | flat, barely lifting, worn through |
+| Month 4 | 120 | quiet and tired |
 | Year 2 | 730 | flat, barely lifting, worn through |
 
-**⚠ Unresolved:** Month 6 (180) and Year 2 (730) both fall in the 180+ band, so stops 3 and 4 produce identical prompts — the same collision the fourth band was added to fix, moved one stop later. The 120-179 band ("quiet and tired") is never reached by any stop. Two ways out, human's call:
-
-- **Relabel stop 3 to Month 4** (`days_in_shelter: 120`) → all four stops distinct, all four bands used, every label honest. Recommended.
-- **Keep Month 6 / Year 2** and make the flattening the point: the curve tops out because there is no worse to get. Defensible in the post, but the slider's last drag is silent and a judge may read it as broken.
-
-Stops live in one array in `src/app.js`; changing this is a one-line edit until hero audio is generated. After that it is a re-render.
+Each stop lands in a **different** weariness band, so every drag is audible and every band the function can reach is demonstrated. Two tests enforce this — if the stops or bands change such that two stops collide, they fail. Stops live in `SLIDER_STOPS` in `src/voicePrompt.js`.
 
 As the slider moves right the card should visibly cool — this is the one place motion earns its keep.
 
@@ -240,6 +237,7 @@ Development aids exist only because the sample audio is silent. None of them shi
 - [ ] Timestamp swap verified by ear
 - [ ] Hero slider ages the voice mid-sentence
 - [ ] Derivation panel visible per dog
+- [ ] Shared-sentence pairing works: two dogs, same sentence, back to back in two clicks
 - [ ] Responsive to 375px, keyboard accessible
 - [ ] Zero API keys in repo or git history
 - [ ] Deployed, opens in a fresh browser
@@ -260,7 +258,8 @@ No new features. In order: re-verify the swap on mobile Safari → tighten spaci
 Not documentation. An argument.
 
 1. **Open with a real listing quoted flat.** Ask what it tells you about the animal. No preamble.
-2. **The thesis** — one paragraph.
+2. **The sentence four dogs share.** Then quote it again — and reveal it is Ponyboy's listing, and Hart's, and two others', word for word. Ponyboy is a 3-year-old Anatolian Shepherd, 77 lb; Hart is a 9-year-old pit bull who has been waiting far longer. The shelter's template cannot tell them apart. **This is the headline finding, and it belongs above the thesis** — it proves the argument from the source material instead of asserting it. The page detects these overlaps at load (`src/sharedText.js`, exact match, no fuzzy matching), so the count is checkable, not claimed.
+3. **The thesis** — one paragraph. The listing text is 100% the shelter's; the only thing we add is the voice. The cheerfulness is the institution's, the weariness is the record's.
 3. **The hero dog.** Day 1 to day 214, same function, one variable moved. This is the emotional and technical centrepiece.
 4. **The mapping table and the actual code.** Technical Execution evidence no other entry will have.
 5. **Why Voice Design, not preset TTS.** Preset = picking from a menu. Generated = the record produces the voice.
@@ -284,4 +283,6 @@ One line per completed step from §8: what was done, what is verified working.
 - **Spec change (human, 2026-08-16).** Three amendments applied: §3.3 is now "not one word of the listing text is ours" — first-person shelter copy ships verbatim, and the contrast between upbeat copy and a worn voice becomes the thesis (§2 self-constraint updated to match); §6.2 weariness gains a fourth band (120-179 "quiet and tired", 180+ "flat, barely lifting, worn through"); §6.3 hero slider is reframed as a demonstration of the mapping with stops Week 1 / Month 1 / Month 6 / Year 2, not a claim about a real timeline, because no shelter publishes intake dates. Code and tests updated; 13 tests pass.
   - **New collision, decision needed:** the chosen stops put Month 6 (180) and Year 2 (730) both in the 180+ band, so the slider's last drag is inaudible and the 120-179 band is never reached. Relabelling stop 3 to **Month 4 (120 days)** gives four distinct stops and uses all four bands. A test asserts both the collision and the fix, so whichever way it goes is enforced. Stops live in `SLIDER_STOPS` in `src/voicePrompt.js` — one-line change until hero audio is generated.
 - **Step 3 — card layout, listing text, derivation panel.** Card renders as a kennel document: mode strip, name, five-field fact list, listing text as a ruled `<blockquote>` with a verbatim-attribution line naming the shelter and capture date, transport controls, then a `<details>` derivation panel. The panel calls `derive()` live — it is not baked into the data — and shows every rule with its input from the record and what it contributed, including rules that fired nothing, then the final Voice Design prompt. **Verified:** all modules parse; `derive()` produces correct per-rule output for all three sample records (checked against §6.2 by hand). **Not yet verified in a browser** — the Chrome extension disconnected mid-session, so the visual gate ("reads like a document") is unconfirmed.
+- **Step 4 — hero stay slider + shared-sentence pairing.** Slider stops set to Week 1 / Month 1 / **Month 4** / Year 2 per the human's decision; each lands in a different weariness band, so no drag is silent (two tests enforce it). Dragging calls `swapSource()`, so the voice ages mid-sentence; the derivation panel and day count re-render live at each stop and the panel cools via a `--stay` custom property. `intake_type: "unknown"` is now a valid enum contributing no modifier — six of the eight real dogs have no published surrender reason — and the panel distinguishes "— not published by the shelter" from "— nothing", so a silent rule is never confused with a missing record. **New: `src/sharedText.js`** detects sentences appearing verbatim in more than one listing (exact match after whitespace collapsing, 6-word minimum, no fuzzy matching) and each affected card gets a callout quoting the shared sentence with one-click buttons to hear another dog read it — Ponyboy → Hart in two clicks. **Verified:** 21 tests pass; hero stops produce four distinct prompts, one per band; shared detection finds the boilerplate across sample listings. **Not verified in a browser** (extension disconnected, human is checking at `localhost:8124`).
+- **Human's step-5 punch list (layout approved, 2026-08-16):** (1) give the listing blockquote more size/line-height so it reads apart from the fact row; (2) wire the inert top-right dot to `--on-air` in designed mode per §7; (3) confirm the `<details>` derivation panel renders, and open it by default on the hero card; (4) two-column grid above ~900px with the hero full-width. **No restyling beyond these four.**
 - **Pre-deploy:** dev scaffolding (swap-check bar, placeholder banner, test tone WAVs, all sample data) must be stripped at step 7 — checklist added under §8.
