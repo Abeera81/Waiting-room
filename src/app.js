@@ -101,58 +101,60 @@ function renderCard(dog, i) {
 
     <hr class="card__rule" />
 
-    <blockquote class="listing">${renderListing(dog)}</blockquote>
-
-    ${renderEcho(dog)}
-
-    <hr class="card__perf" />
-
-    <div class="voice">
-      <div class="voice__head">
-        <p class="voice__title">The same words. Two voices.</p>
-        <p class="onair"><span class="onair__dot" aria-hidden="true"></span>On air</p>
-      </div>
-      <p class="voice__note">
-        Listen to this listing read in the shelter's voice, and in a voice designed from
-        ${esc(dog.name)}'s own record.
-      </p>
-
-      <div class="switch" role="group" aria-label="Voice">
-        <button class="switch__half switch__half--flat is-on" type="button" data-action="mode" data-mode="flat" aria-pressed="true">
-          <span class="switch__name">Flat</span>
-          <span class="switch__gloss">Shelter listing voice</span>
-        </button>
-        <span class="switch__knob" aria-hidden="true"></span>
-        <button class="switch__half switch__half--designed" type="button" data-action="mode" data-mode="designed" aria-pressed="false">
-          <span class="switch__name">Designed</span>
-          <span class="switch__gloss">${esc(dog.name)}'s designed voice</span>
-        </button>
+    <div class="card__cols">
+      <div class="card__doc">
+        <blockquote class="listing">${renderListing(dog)}</blockquote>
+        ${renderEcho(dog)}
+        ${dog.hero ? renderDial(dog) : ''}
       </div>
 
-      <div class="player">
-        <button class="player__play" type="button" data-action="play" aria-label="Play">
-          <span class="player__glyph" aria-hidden="true"></span>
-        </button>
-        <div class="wave" data-action="seek" role="presentation">
-          ${waveBars(dog.id)}
-          <div class="wave__mask"></div>
+      <div class="card__apparatus">
+        <div class="voice">
+          <div class="voice__head">
+            <p class="voice__title">The same words. Two voices.</p>
+            <p class="onair"><span class="onair__dot" aria-hidden="true"></span>On air</p>
+          </div>
+          <p class="voice__note">
+            The shelter's voice, and a voice designed from ${esc(dog.name)}'s own record.
+          </p>
+
+          <div class="switch" role="group" aria-label="Voice">
+            <button class="switch__half switch__half--flat is-on" type="button" data-action="mode" data-mode="flat" aria-pressed="true">
+              <span class="switch__name">Flat</span>
+              <span class="switch__gloss">Shelter listing voice</span>
+            </button>
+            <span class="switch__knob" aria-hidden="true"></span>
+            <button class="switch__half switch__half--designed" type="button" data-action="mode" data-mode="designed" aria-pressed="false">
+              <span class="switch__name">Designed</span>
+              <span class="switch__gloss">${esc(dog.name)}'s designed voice</span>
+            </button>
+          </div>
+
+          <div class="player">
+            <button class="player__play" type="button" data-action="play" aria-label="Play">
+              <span class="player__glyph" aria-hidden="true"></span>
+            </button>
+            <div class="wave" data-action="seek" role="presentation">
+              ${waveBars(dog.id)}
+              <div class="wave__mask"></div>
+            </div>
+            <p class="player__time"><b>00:00</b> / 00:00</p>
+          </div>
         </div>
-        <p class="player__time"><b>00:00</b> / 00:00</p>
       </div>
     </div>
 
-    ${dog.hero ? renderDial(dog) : ''}
-
     <details class="derivation">
       <summary><span>How this voice was derived</span></summary>
-      <div class="derivation__panel">${renderDerivation(a)}</div>
+      <div class="derivation__panel">
+        ${renderDerivation(a)}
+        <p class="card__origin">
+          Verbatim from
+          <a href="${esc(dog.source.url)}" target="_blank" rel="noopener noreferrer">${esc(dog.source.shelter)}</a>,
+          captured ${esc(dog.source.captured)}.${a.medical_note ? ` Medical — ${esc(a.medical_note)}` : ''}
+        </p>
+      </div>
     </details>
-
-    <p class="card__origin">
-      Verbatim from
-      <a href="${esc(dog.source.url)}" target="_blank" rel="noopener noreferrer">${esc(dog.source.shelter)}</a>,
-      captured ${esc(dog.source.captured)}.${a.medical_note ? ` Medical — ${esc(a.medical_note)}` : ''}
-    </p>
   `;
 
   wireCard(el, dog);
@@ -211,30 +213,34 @@ function renderDial(dog) {
 
   return `
     <section class="dial">
-      <p class="dial__label">The stay dial — <code>days_in_shelter</code> as the only variable</p>
+      <div class="dial__control">
+        <p class="dial__label">The stay dial — <code>days_in_shelter</code> as the only variable</p>
 
-      <div class="dial__track" style="--stops:${stops.length}">
-        <div class="dial__rule" aria-hidden="true"></div>
-        <div class="dial__marks" aria-hidden="true">${stops.map(() => '<span></span>').join('')}</div>
-        <div class="dial__marker" aria-hidden="true"></div>
-        <input class="dial__input" type="range" min="0" max="${stops.length - 1}" step="1" value="0"
-               aria-label="Days in shelter" data-action="stay"
-               aria-valuetext="${esc(stops[0].label)}, ${stops[0].days} days" />
+        <div class="dial__track" style="--stops:${stops.length}">
+          <div class="dial__rule" aria-hidden="true"></div>
+          <div class="dial__marks" aria-hidden="true">${stops.map(() => '<span></span>').join('')}</div>
+          <div class="dial__marker" aria-hidden="true"></div>
+          <input class="dial__input" type="range" min="0" max="${stops.length - 1}" step="1" value="0"
+                 aria-label="Days in shelter" data-action="stay"
+                 aria-valuetext="${esc(stops[0].label)}, ${stops[0].days} days" />
+        </div>
+
+        <ol class="dial__stops">
+          ${stops
+            .map(
+              (s, i) =>
+                `<li class="dial__stop${i === 0 ? ' is-on' : ''}"><span>${esc(s.label)}</span><em>${s.days}d</em></li>`
+            )
+            .join('')}
+        </ol>
       </div>
 
-      <ol class="dial__stops">
-        ${stops
-          .map(
-            (s, i) =>
-              `<li class="dial__stop${i === 0 ? ' is-on' : ''}"><span>${esc(s.label)}</span><em>${s.days}d</em></li>`
-          )
-          .join('')}
-      </ol>
-
-      <p class="dial__prompt"><span class="dial__prompt-label">Prompt at this stop</span><code></code></p>
-      <p class="dial__caveat">
-        A demonstration of the mapping — not this dog's real stay. No shelter publishes intake dates.
-      </p>
+      <div class="dial__readout">
+        <p class="dial__prompt"><span class="dial__prompt-label">Prompt at this stop</span><code></code></p>
+        <p class="dial__caveat">
+          A demonstration of the mapping — not a real stay. No shelter publishes intake dates.
+        </p>
+      </div>
     </section>
   `;
 }

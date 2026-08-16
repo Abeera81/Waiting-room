@@ -14,9 +14,9 @@
   --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --display: 'Archivo Narrow', 'Archivo Condensed', Oswald, system-ui, sans-serif;
 
-  --gutter: clamp(1.1rem, 4vw, 4rem);
-  --page: 78rem;
-  --card-w: min(46rem, 100%);
+  --gutter: clamp(1.1rem, 3vw, 3rem);
+  --page: 84rem;
+  --card-w: min(68rem, 100%);
 
   --s-1: clamp(0.5rem, 1vw, 0.75rem);
   --s-2: clamp(0.9rem, 1.8vw, 1.4rem);
@@ -101,21 +101,23 @@ kbd {
 
 /* ══ INTRODUCTION ═════════════════════════════════════════════════════════ */
 
+/* A masthead, not a cover: maximum impact, minimum height. Everything here
+   competes with the card for the first viewport, so it is kept short. */
 .intro {
   display: grid;
-  gap: var(--s-3);
+  gap: var(--s-2) var(--s-3);
   max-width: var(--page);
   margin: 0 auto;
-  padding: var(--s-4) var(--gutter) var(--s-3);
+  padding: 1.5rem var(--gutter) 0.9rem;
 }
 
 .intro__title {
   margin: 0;
   font-family: var(--display);
   font-weight: 700;
-  font-size: clamp(2.75rem, 7vw, 5.5rem);
-  line-height: 0.86;
-  letter-spacing: -0.02em;
+  font-size: clamp(2rem, 3.4vw, 3rem);
+  line-height: 0.84;
+  letter-spacing: -0.025em;
   text-transform: uppercase;
 }
 
@@ -125,31 +127,33 @@ kbd {
 
 .intro__lede {
   margin: 0;
-  font-size: clamp(1rem, 1.5vw, 1.125rem);
+  font-size: clamp(0.9375rem, 1.15vw, 1.0625rem);
   line-height: 1.5;
 }
 
 .intro__rule {
   width: 100%;
-  max-width: 16rem;
-  margin: var(--s-2) 0;
+  max-width: 13rem;
+  margin: 0.75rem 0;
   border: 0;
   border-top: 1px solid var(--rule);
 }
 
 .intro__sub {
   margin: 0;
-  max-width: 26ch;
+  max-width: 28ch;
+  font-size: 0.875rem;
   color: var(--muted);
   line-height: 1.6;
 }
 
-/* The finding. Largest quoted type on the page, with the one warm rule. */
+/* The finding. Largest quoted type on the page — but set wide so it lands in
+   three or four lines rather than a narrow nine-line column. */
 .finding__quote {
   margin: 0;
-  max-width: 30ch;
-  font-size: clamp(1.15rem, 2.35vw, 1.85rem);
-  line-height: 1.45;
+  max-width: 44ch;
+  font-size: clamp(1.0625rem, 1.5vw, 1.375rem);
+  line-height: 1.5;
   font-weight: 400;
   quotes: '“' '”';
 }
@@ -165,9 +169,9 @@ kbd {
 #finding::after {
   content: '';
   display: block;
-  width: min(100%, 26rem);
+  width: min(100%, 24rem);
   height: 4px;
-  margin: var(--s-2) 0 var(--s-1);
+  margin: 0.65rem 0 0.55rem;
   background: var(--warm);
 }
 
@@ -205,9 +209,9 @@ kbd {
   display: none;
   place-self: start end;
   margin: 0;
-  padding: 1.1rem 0.6rem;
-  width: 7.5rem;
-  height: 7.5rem;
+  padding: 1.05rem 0.5rem;
+  width: 6.25rem;
+  height: 6.25rem;
   border: 1px solid var(--rule);
   border-radius: 50%;
   color: var(--muted);
@@ -225,10 +229,9 @@ kbd {
 
 @media (min-width: 64rem) {
   .intro {
-    grid-template-columns: auto minmax(14rem, 18rem) minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(12rem, 15rem) minmax(24rem, 1fr) auto;
     align-items: start;
-    gap: var(--s-4);
-    padding-top: var(--s-5);
+    gap: var(--s-3);
   }
 
   .intro__stamp {
@@ -249,15 +252,15 @@ kbd {
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--s-2);
-  padding: var(--s-3) 0 0;
+  padding: 0;
 }
 
 .deck__cards {
   position: relative;
   justify-self: center;
   width: var(--card-w);
-  /* The stack needs room beneath for the cards behind the active one. */
-  padding-bottom: 1.75rem;
+  /* Room beneath for the edges of the cards still in the deck. */
+  padding-bottom: 3rem;
 }
 
 /* ── the card ── */
@@ -266,7 +269,8 @@ kbd {
   --drag: 0px;
   --tilt: 0deg;
   --stay: 0;
-  padding: clamp(1.4rem, 3.2vw, 2.75rem);
+  min-height: 31rem;
+  padding: clamp(1.25rem, 2.4vw, 2rem) clamp(1.25rem, 2.6vw, 2.25rem);
   background: var(--paper);
   border-radius: var(--card-radius);
   box-shadow:
@@ -278,10 +282,16 @@ kbd {
     background-color 520ms ease;
 }
 
-/* Cards behind the active one: only the top edge shows. */
+/* Cards behind the active one are pinned to exactly the active card's box, so
+   the offset and tilt below are the only thing that shows them. Without this
+   they inherit their own content height and hide completely. */
 .card:not(.is-active) {
   position: absolute;
-  inset: 0 0 auto;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 3rem;
+  overflow: hidden;
   pointer-events: none;
 }
 
@@ -294,21 +304,23 @@ kbd {
   transform: translateX(var(--drag)) rotate(var(--tilt));
 }
 
+/* The deck: enough offset and tilt to read as physical paper, small enough to
+   stay tidy. Each layer also sits a shade darker, as stacked stock does. */
 .card[data-offset='1'] {
-  transform: translateY(0.7rem) scale(0.983);
-  opacity: 1;
+  transform: translateY(1.05rem) rotate(-0.9deg) scale(0.996);
+  background: color-mix(in srgb, var(--rule) 14%, var(--paper));
   z-index: 4;
 }
 
 .card[data-offset='2'] {
-  transform: translateY(1.35rem) scale(0.966);
-  opacity: 1;
+  transform: translateY(2.1rem) rotate(1.25deg) scale(0.992);
+  background: color-mix(in srgb, var(--warm) 16%, var(--paper));
   z-index: 3;
 }
 
 .card[data-offset='3'] {
-  transform: translateY(1.9rem) scale(0.951);
-  opacity: 1;
+  transform: translateY(3.05rem) rotate(-0.5deg) scale(0.988);
+  background: color-mix(in srgb, var(--rule) 30%, var(--paper));
   z-index: 2;
 }
 
@@ -317,7 +329,7 @@ kbd {
 .card[data-offset='5'],
 .card[data-offset='6'],
 .card[data-offset='7'] {
-  transform: translateY(2.3rem) scale(0.94);
+  transform: translateY(3.2rem) scale(0.92);
   opacity: 0;
   z-index: 1;
 }
@@ -338,6 +350,10 @@ kbd {
 }
 
 /* ── card head ── */
+
+.card__head p {
+  margin: 0;
+}
 
 .card__head {
   display: flex;
@@ -363,10 +379,10 @@ kbd {
 }
 
 .card__name {
-  margin: clamp(0.6rem, 1.6vw, 1.1rem) 0 0;
+  margin: clamp(0.4rem, 1vw, 0.7rem) 0 0;
   font-family: var(--display);
   font-weight: 700;
-  font-size: clamp(3.25rem, 11vw, 6.5rem);
+  font-size: clamp(2.5rem, 6.5vw, 4.25rem);
   line-height: 0.88;
   letter-spacing: -0.02em;
   text-transform: uppercase;
@@ -377,7 +393,7 @@ kbd {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem 0.9rem;
-  margin: clamp(0.6rem, 1.4vw, 0.9rem) 0 0;
+  margin: 0.55rem 0 0;
   font-size: 0.75rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -391,18 +407,38 @@ kbd {
 }
 
 .card__rule {
-  margin: var(--s-2) 0 var(--s-3);
+  margin: 0.85rem 0 1rem;
   border: 0;
   border-top: 1px solid var(--rule);
+}
+
+/* The card is landscape: the document reads on the left, the instruments sit
+   on the right. Stacking these vertically is what made it three screens tall. */
+.card__cols {
+  display: grid;
+  gap: var(--s-2);
+}
+
+@media (min-width: 60rem) {
+  .card__cols {
+    grid-template-columns: minmax(0, 1.8fr) minmax(18rem, 1fr);
+    gap: var(--s-3);
+  }
+
+  .card__apparatus {
+    padding-left: var(--s-3);
+    border-left: 1px dashed var(--rule);
+  }
 }
 
 /* ── the listing: the reason the page exists, so it is set to be read ── */
 
 .listing {
   margin: 0;
-  font-size: clamp(1rem, 1.35vw, 1.125rem);
+  max-width: 68ch;
+  font-size: 1rem;
   font-weight: 400;
-  line-height: 1.85;
+  line-height: 1.7;
 }
 
 .thread {
@@ -468,7 +504,7 @@ kbd {
 }
 
 /* A tear-off perforation between the record and its apparatus. */
-.card__perf {
+.card__perf { /* retained for the mobile stack */
   margin: var(--s-3) 0;
   border: 0;
   border-top: 1px dashed var(--rule);
@@ -485,7 +521,7 @@ kbd {
 
 .voice__title {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -528,10 +564,10 @@ kbd {
 }
 
 .voice__note {
-  margin: 0.5rem 0 var(--s-2);
+  margin: 0.35rem 0 0.7rem;
   max-width: 52ch;
-  font-size: 0.8125rem;
-  line-height: 1.7;
+  font-size: 0.75rem;
+  line-height: 1.6;
   color: var(--muted);
 }
 
@@ -547,7 +583,7 @@ kbd {
 }
 
 .switch__half {
-  padding: 0.85rem 1rem;
+  padding: 0.7rem 0.85rem;
   border: 0;
   background: transparent;
   color: var(--muted);
@@ -563,7 +599,7 @@ kbd {
 
 .switch__name {
   display: block;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -571,9 +607,13 @@ kbd {
 
 .switch__gloss {
   display: block;
-  margin-top: 0.15rem;
-  font-size: 0.6875rem;
+  margin-top: 0.1rem;
+  font-size: 0.5625rem;
   font-weight: 300;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .switch__half--flat.is-on {
@@ -608,7 +648,7 @@ kbd {
   display: flex;
   align-items: center;
   gap: var(--s-2);
-  margin-top: var(--s-2);
+  margin-top: 0.8rem;
 }
 
 .player__play {
@@ -702,10 +742,28 @@ kbd {
 
 /* ══ THE STAY DIAL (hero only) ════════════════════════════════════════════ */
 
+/* A full-width instrument across the foot of the card. Laid out horizontally
+   because stacking label / track / stops / prompt / caveat is what pushed the
+   card past a screen. */
 .dial {
-  margin-top: var(--s-3);
-  padding-top: var(--s-2);
-  border-top: 1px solid var(--rule);
+  display: grid;
+  gap: var(--s-2);
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px dashed var(--rule);
+}
+
+@media (min-width: 60rem) {
+  .dial {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.95fr);
+    gap: var(--s-2);
+    align-items: start;
+  }
+
+  .dial__readout {
+    padding-left: var(--s-2);
+    border-left: 1px dashed var(--rule);
+  }
 }
 
 .dial__label {
@@ -728,7 +786,7 @@ kbd {
   --pos: 0;
   --inset: 0.6rem;
   position: relative;
-  height: 2.75rem;
+  height: 2.1rem;
 }
 
 .dial__rule,
@@ -831,7 +889,7 @@ kbd {
 }
 
 .dial__prompt {
-  margin: var(--s-2) 0 0;
+  margin: 0;
 }
 
 .dial__prompt-label {
@@ -844,8 +902,8 @@ kbd {
 }
 
 .dial__prompt code {
-  font-size: 0.875rem;
-  line-height: 1.6;
+  font-size: 0.8125rem;
+  line-height: 1.5;
   overflow-wrap: anywhere;
 }
 
@@ -863,22 +921,22 @@ kbd {
 }
 
 .dial__caveat {
-  margin: var(--s-1) 0 0;
-  font-size: 0.75rem;
+  margin: 0.4rem 0 0;
+  font-size: 0.6875rem;
   font-style: italic;
-  line-height: 1.65;
+  line-height: 1.55;
   color: var(--muted);
 }
 
 /* ══ DERIVATION ═══════════════════════════════════════════════════════════ */
 
 .derivation {
-  margin-top: var(--s-3);
+  margin-top: 0.6rem;
   border-top: 1px solid var(--rule);
 }
 
 .derivation summary {
-  padding: 0.75rem 0;
+  padding: 0.55rem 0;
   font-size: 0.6875rem;
   font-weight: 500;
   letter-spacing: 0.16em;
@@ -993,7 +1051,7 @@ kbd {
 }
 
 .deck__hint {
-  margin: var(--s-3) 0 0;
+  margin: 0.6rem 0 0;
   text-align: center;
   font-size: 0.6875rem;
   letter-spacing: 0.16em;
@@ -1010,7 +1068,7 @@ kbd {
 .index {
   display: flex;
   gap: 2px;
-  margin-top: var(--s-3);
+  margin-top: 0.6rem;
   padding-bottom: 2px;
   overflow-x: auto;
   scrollbar-width: thin;
@@ -1018,8 +1076,8 @@ kbd {
 
 .index__item {
   flex: 1 0 auto;
-  min-width: 7rem;
-  padding: 0.7rem 0.9rem 0.8rem;
+  min-width: 6.5rem;
+  padding: 0.5rem 0.75rem 0.6rem;
   border: 0;
   border-top: 2px solid transparent;
   border-radius: 4px 4px 0 0;
@@ -1153,6 +1211,60 @@ kbd {
    Recomposed: the card keeps the viewport, the arrows move under it. */
 
 @media (max-width: 48rem) {
+  /* The masthead must not eat the phone: the card should be reachable in a
+     glance, not after a scroll. */
+  /* Title and premise sit side by side even on a phone — stacking every block
+     pushed the card off the screen entirely. */
+  .intro {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: 0.7rem 1.1rem;
+    padding: 1rem var(--gutter) 0.7rem;
+  }
+
+  .intro__title {
+    grid-column: 1;
+    font-size: 1.625rem;
+  }
+
+  .intro__premise {
+    grid-column: 2;
+  }
+
+  .intro__finding,
+  #finding {
+    grid-column: 1 / -1;
+  }
+
+  .intro__rule {
+    margin: 0.5rem 0;
+  }
+
+  .intro__sub {
+    font-size: 0.8125rem;
+  }
+
+  .finding__quote {
+    font-size: 1rem;
+  }
+
+  #finding::after {
+    margin: 0.5rem 0 0.4rem;
+  }
+
+  /* Stacked, so a wrapped line never begins with a stray separator. */
+  .card__meta {
+    display: block;
+  }
+
+  .card__meta span + span::before {
+    content: none;
+  }
+
+  .card__meta span {
+    display: block;
+  }
+
   .deck {
     grid-template-columns: 1fr;
     gap: var(--s-2);
