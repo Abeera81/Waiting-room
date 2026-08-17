@@ -28,12 +28,10 @@ Eight real shelter listings, each read twice. The flat reading is a stock Eleven
 
 ## Demo
 
-**Live:** https://waiting-room-ruby.vercel.app/
+**Live:** https://waiting-room-ruby.vercel.app/  
 **Repo:** https://github.com/Abeera81/Waiting-room
 
-<!-- DEMO VIDEO: paste the URL below, then delete this comment.
-     YouTube:  {% embed https://youtu.be/VIDEO_ID %}
-     Uploaded: drag the file into the DEV editor and keep the tag it inserts. -->
+{% embed https://youtu.be/k8hiKmGivms %}
 
 *60-second walkthrough — the audio swap is the thing to listen for.*
 
@@ -100,7 +98,7 @@ So when a worn, slow voice reads *"I will shower you with love!"*, nothing has b
 
 {% embed https://github.com/Abeera81/Waiting-room %}
 
-No backend, no database, no build step. Five modules: `voicePrompt.js` (the mapping), `audioBus.js` (the swap), `sharedText.js` (the template detector), `app.js` (the deck), and `styles.css`. Thirty-two tests under `node --test`, no dependencies.
+No backend, no database, no build step. Four modules and a stylesheet: `voicePrompt.js` (the mapping), `audioBus.js` (the swap), `sharedText.js` (the template detector), `app.js` (the deck), and `styles.css`. Thirty-two tests under `node --test`, zero dependencies.
 
 ### The swap is the demo
 
