@@ -71,6 +71,69 @@ function renderFinding(groups) {
   }
 }
 
+/* ══ the stamp ═════════════════════════════════════════════════════════════
+   The mark of the organisation that published the record currently on top of
+   the deck. Never invented: the words come from dog.source.shelter. */
+
+const stampEl = document.getElementById('stamp');
+
+function renderStamp(dog) {
+  if (!stampEl) return;
+  const name = shelterName(dog).toUpperCase();
+  if (stampEl.dataset.shelter === name) return;
+  stampEl.dataset.shelter = name;
+
+  const [top, bottom] = splitAround(name);
+  // A stamp is struck, not typeset: size it so the longest arc still fits.
+  const longest = Math.max(top.length, bottom.length);
+  const size = longest > 13 ? 8.4 : longest > 11 ? 9.4 : 10.8;
+
+  stampEl.innerHTML = `
+    <svg class="stamp" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+      <defs>
+        <path id="stamp-top" d="M 16,60 A 44,44 0 0 1 104,60" fill="none" />
+        <path id="stamp-bot" d="M 20,60 A 40,40 0 0 0 100,60" fill="none" />
+        <filter id="stamp-ink" x="-15%" y="-15%" width="130%" height="130%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.11" numOctaves="3" seed="9" />
+          <feDisplacementMap in="SourceGraphic" scale="1.7" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+      <g filter="url(#stamp-ink)" fill="currentColor">
+        <circle cx="60" cy="60" r="55" fill="none" stroke="currentColor" stroke-width="2.2" />
+        <circle cx="60" cy="60" r="50.5" fill="none" stroke="currentColor" stroke-width="0.7" />
+        <text font-size="${size}"><textPath href="#stamp-top" startOffset="50%" text-anchor="middle">${esc(top)}</textPath></text>
+        <text font-size="${size}"><textPath href="#stamp-bot" startOffset="50%" text-anchor="middle">${esc(bottom)}</textPath></text>
+        <g transform="translate(60 62)">
+          <ellipse cx="0" cy="5" rx="7.5" ry="6" />
+          <ellipse cx="-8.4" cy="-2.6" rx="3.1" ry="4" transform="rotate(-18 -8.4 -2.6)" />
+          <ellipse cx="-3" cy="-7.4" rx="3.1" ry="4.2" />
+          <ellipse cx="3" cy="-7.4" rx="3.1" ry="4.2" />
+          <ellipse cx="8.4" cy="-2.6" rx="3.1" ry="4" transform="rotate(18 8.4 -2.6)" />
+        </g>
+      </g>
+    </svg>
+  `;
+}
+
+/** Split a name into two arcs of roughly equal length, on word boundaries. */
+function splitAround(name) {
+  const words = name.split(/\s+/);
+  if (words.length < 2) return [name, ''];
+
+  let best = 1;
+  let bestGap = Infinity;
+  for (let i = 1; i < words.length; i += 1) {
+    const gap = Math.abs(
+      words.slice(0, i).join(' ').length - words.slice(i).join(' ').length
+    );
+    if (gap < bestGap) {
+      bestGap = gap;
+      best = i;
+    }
+  }
+  return [words.slice(0, best).join(' '), words.slice(best).join(' ')];
+}
+
 /* ══ cards ═════════════════════════════════════════════════════════════════ */
 
 function renderCard(dog, i) {
@@ -333,6 +396,7 @@ function goTo(i, { silent = false } = {}) {
   }
 
   layout();
+  renderStamp(state.dogs[next]);
   syncTransport();
 
   if (changed && !silent) {
