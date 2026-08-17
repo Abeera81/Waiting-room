@@ -86,13 +86,15 @@ function renderStamp(dog) {
   const [top, bottom] = splitAround(name);
   // A stamp is struck, not typeset: size it so the longest arc still fits.
   const longest = Math.max(top.length, bottom.length);
-  const size = longest > 13 ? 8.4 : longest > 11 ? 9.4 : 10.8;
+  const size = longest > 13 ? 8 : longest > 11 ? 9.2 : 10.5;
 
   stampEl.innerHTML = `
     <svg class="stamp" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
       <defs>
-        <path id="stamp-top" d="M 16,60 A 44,44 0 0 1 104,60" fill="none" />
-        <path id="stamp-bot" d="M 20,60 A 40,40 0 0 0 100,60" fill="none" />
+        <!-- Top glyphs grow outward from their baseline, bottom glyphs inward,
+             so the two radii differ to land both bands in the same ring. -->
+        <path id="stamp-top" d="M 24,60 A 36,36 0 0 1 96,60" fill="none" />
+        <path id="stamp-bot" d="M 15.5,60 A 44.5,44.5 0 0 0 104.5,60" fill="none" />
         <filter id="stamp-ink" x="-15%" y="-15%" width="130%" height="130%">
           <feTurbulence type="fractalNoise" baseFrequency="0.11" numOctaves="3" seed="9" />
           <feDisplacementMap in="SourceGraphic" scale="1.7" xChannelSelector="R" yChannelSelector="G" />

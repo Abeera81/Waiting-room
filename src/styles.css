@@ -454,7 +454,7 @@ kbd {
 
 @media (min-width: 60rem) {
   .card__cols {
-    grid-template-columns: minmax(0, 1.75fr) minmax(17rem, 1fr);
+    grid-template-columns: minmax(0, 1.75fr) minmax(18rem, 1fr);
     gap: clamp(1.75rem, 3.5vw, 3.25rem);
   }
 
@@ -631,7 +631,8 @@ kbd {
 
 .switch__half {
   position: relative;
-  padding: 0.72rem 0.9rem;
+  min-width: 0;
+  padding: 0.72rem 0.85rem;
   border: 0;
   font: inherit;
   text-align: left;
@@ -639,15 +640,16 @@ kbd {
   transition: color 380ms ease;
 }
 
-/* The extra inner padding keeps both glosses clear of the knob. */
+/* The extra inner padding keeps both labels clear of the knob, and is kept
+   small enough that DESIGNED still sets on one line in the narrowest column. */
 .switch__half--flat {
-  padding-right: 1.6rem;
+  padding-right: 1.2rem;
   background: color-mix(in srgb, var(--ink) 94%, var(--warm));
   color: var(--paper);
 }
 
 .switch__half--designed {
-  padding-left: 1.6rem;
+  padding-left: 1.2rem;
   background: var(--warm);
   color: var(--ink);
 }
@@ -675,14 +677,15 @@ kbd {
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .switch__gloss {
   display: block;
   margin-top: 0.15rem;
-  font-size: 0.5625rem;
+  font-size: 0.5rem;
   font-weight: 400;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.03em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -844,7 +847,7 @@ kbd {
 
 @media (min-width: 60rem) {
   .dial {
-    grid-template-columns: minmax(0, 1.75fr) minmax(17rem, 1fr);
+    grid-template-columns: minmax(0, 1.75fr) minmax(18rem, 1fr);
     gap: clamp(1.75rem, 3.5vw, 3.25rem);
     align-items: start;
   }
