@@ -1170,10 +1170,12 @@ kbd {
   scrollbar-width: thin;
 }
 
-/* File tabs: each one a folder edge, the front of the file lifted and lighter. */
+/* File tabs: each one a folder edge, the front of the file lifted and lighter.
+   Equal basis so every tab is the same width regardless of the name it holds;
+   the min-width clears the longest name in the set, so nothing ever clips. */
 .index__item {
-  flex: 1 0 auto;
-  min-width: 6.5rem;
+  flex: 1 1 0;
+  min-width: 7.5rem;
   padding: 0.45rem 0.75rem 0.5rem;
   border: 0;
   border-radius: 6px 6px 0 0;
@@ -1207,6 +1209,7 @@ kbd {
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 /* The active tab is the front of the file: raised, lighter, marked in red. */
@@ -1268,13 +1271,19 @@ kbd {
   }
 }
 
+/* This block sits on the desk, not on paper, so its secondary tones are mixed
+   toward the desk. Mixing toward the paper (--muted) washes them out here. */
+.about {
+  --muted-on-desk: color-mix(in srgb, var(--ink) 78%, var(--desk));
+}
+
 .about__col h2 {
   margin: 0 0 var(--s-2);
   font-size: 0.625rem;
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--muted-on-desk);
 }
 
 .about__col p {
@@ -1285,8 +1294,8 @@ kbd {
 }
 
 .about__fine {
-  color: var(--muted);
-  font-size: 0.875rem !important;
+  color: color-mix(in srgb, var(--ink) 88%, var(--desk));
+  font-size: 0.9375rem !important;
 }
 
 .steps {
@@ -1310,7 +1319,7 @@ kbd {
   font-family: var(--mono);
   font-size: 0.625rem;
   letter-spacing: 0.14em;
-  color: var(--muted);
+  color: var(--muted-on-desk);
   padding-top: 0.3rem;
 }
 
@@ -1330,7 +1339,7 @@ kbd {
   font-size: 0.5625rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--muted-on-desk);
 }
 
 /* ══ SMALL SCREENS ════════════════════════════════════════════════════════ */
@@ -1411,10 +1420,6 @@ kbd {
 
   .switch__knob {
     display: none;
-  }
-
-  .index__item {
-    min-width: 6rem;
   }
 }
 
