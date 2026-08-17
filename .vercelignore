@@ -1,0 +1,5 @@
+# Nothing here is fetched by the page at runtime.
+reference/
+tests/
+tools/
+.github/
