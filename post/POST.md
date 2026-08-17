@@ -1,10 +1,12 @@
 ---
 title: "The Waiting Room: I generated a voice for eight shelter dogs from their own paperwork"
-published: false
+published: true
 description: "Eight real shelter listings, read twice — once in the shelter's voice, once in a voice generated from that dog's own record by ElevenLabs Voice Design."
-tags: devchallenge, dogdays, elevenlabs, ai
-cover_image: REPLACE_WITH_DEV_UPLOAD_URL
+tags: devchallenge, weekendchallenge, elevenlabs, dogdays
+cover_image: https://waiting-room-ruby.vercel.app/post/images/01-cover.png
 ---
+
+*This is a submission for [Weekend Challenge: Dog Days Edition](https://dev.to/challenges/weekend-2026-08-13)*
 
 > "I really enjoy the company of my human friends. I may be shy at first, but once we get to know each other I will shower you with love! All I need is a soft warm place to lay, and to be told I am the goodest boy. I already know how to sit and I walk lovely on leash!"
 
@@ -13,6 +15,8 @@ That's Hart's entire adoption listing. Read it again and tell me one thing about
 You can't. Not his age, not his size, not how long he has been sitting in a kennel. And here is the part that took me most of a day to notice: **two of those four sentences are not about Hart at all.** They also appear, word for word, in other dogs' listings at the same shelter.
 
 Most listening projects would take that text and read it in a nicer voice. **The Waiting Room reads it twice — once in the shelter's own upbeat register, and once in a voice generated from Hart's structured record — and the gap between the two is the whole argument.**
+
+## What I Built
 
 **The Waiting Room** is a single-page listening study of eight real, adoptable dogs. Every word on every card is verbatim from the shelter that published it. The only thing I added is the voice.
 
@@ -27,15 +31,17 @@ Eight real shelter listings, each read twice. The flat reading is a stock Eleven
 **Live:** https://waiting-room-ruby.vercel.app/
 **Repo:** https://github.com/Abeera81/Waiting-room
 
-{% embed REPLACE_WITH_DEMO_VIDEO_URL %}
+<!-- DEMO VIDEO: paste the URL below, then delete this comment.
+     YouTube:  {% embed https://youtu.be/VIDEO_ID %}
+     Uploaded: drag the file into the DEV editor and keep the tag it inserts. -->
 
-*90-second walkthrough — the audio swap is the thing to listen for.*
+*60-second walkthrough — the audio swap is the thing to listen for.*
 
 The whole interaction fits in one screen:
 
-[![The desk, with Yuji's record on top of the deck](REPLACE_WITH_DEV_UPLOAD_URL)](REPLACE_WITH_DEV_UPLOAD_URL)
+[![The desk, with Yuji's record on top of the deck](https://waiting-room-ruby.vercel.app/post/images/01-cover.png)](https://waiting-room-ruby.vercel.app/)
 
-*`post/images/01-cover.png` — one record at a time on a desk, with the rest of the deck showing underneath.*
+*One record at a time on a desk, with the rest of the deck showing underneath.*
 
 1. Press play. You hear the listing in a flat, upbeat listing voice.
 2. Mid-sentence, hit **DESIGNED**. The words continue from exactly where they were, in a different voice.
@@ -66,9 +72,9 @@ It isn't a one-off. The page detects the overlaps itself at load — exact strin
 
 Ponyboy comes off worst. **Three of the four sentences in his listing belong to other dogs too.**
 
-[![Ponyboy's listing with three of four sentences underlined as shared](REPLACE_WITH_DEV_UPLOAD_URL)](REPLACE_WITH_DEV_UPLOAD_URL)
+[![Ponyboy's listing with three of four sentences underlined as shared](https://waiting-room-ruby.vercel.app/post/images/07-shared-listing.png)](https://waiting-room-ruby.vercel.app/post/images/07-shared-listing.png)
 
-*`post/images/07-shared-listing.png` — the marks are drawn from the detector, not typed by me. The underlined sentences are the ones that are not his.*
+*The marks are drawn from the detector, not typed by me. The underlined sentences are the ones that are not his.*
 
 I want to be fair to the shelters here: a template is a rational response to being understaffed. Oregon Humane is moving hundreds of animals with a handful of people. But the effect is that the document cannot tell a 3-year-old Anatolian Shepherd from a 9-year-old pit bull, and the document is what an adopter reads.
 
@@ -82,13 +88,19 @@ The listing text is 100% the shelter's — no additions, no paraphrase, no trimm
 
 So when a worn, slow voice reads *"I will shower you with love!"*, nothing has been editorialised. **The cheerfulness is the institution's. The weariness is the record's.** Both were already in the document; they were just never audible at the same time.
 
-[![The FLAT / DESIGNED switch in flat mode](REPLACE_WITH_DEV_UPLOAD_URL)](REPLACE_WITH_DEV_UPLOAD_URL)
+[![The FLAT / DESIGNED switch in flat mode](https://waiting-room-ruby.vercel.app/post/images/03-voice-flat.png)](https://waiting-room-ruby.vercel.app/post/images/03-voice-flat.png)
 
-*`post/images/03-voice-flat.png` — the shelter's reading.*
+*The shelter's reading.*
 
-[![The same switch in designed mode, amber](REPLACE_WITH_DEV_UPLOAD_URL)](REPLACE_WITH_DEV_UPLOAD_URL)
+[![The same switch in designed mode, amber](https://waiting-room-ruby.vercel.app/post/images/04-voice-designed.png)](https://waiting-room-ruby.vercel.app/post/images/04-voice-designed.png)
 
-*`post/images/04-voice-designed.png` — the record's reading. Same words, same file length, same playhead.*
+*The record's reading. Same words, same file length, same playhead.*
+
+## Code
+
+{% embed https://github.com/Abeera81/Waiting-room %}
+
+No backend, no database, no build step. Five modules: `voicePrompt.js` (the mapping), `audioBus.js` (the swap), `sharedText.js` (the template detector), `app.js` (the deck), and `styles.css`. Thirty-two tests under `node --test`, no dependencies.
 
 ### The swap is the demo
 
@@ -140,13 +152,13 @@ His card carries a **stay dial** with four stops. Every stop calls the same func
 
 Dragging the dial swaps the audio through the same playhead-preserving function, so the voice ages mid-sentence. Four stops, four different weariness bands — chosen so that no drag is silent, and a test fails loudly if anyone changes the stops in a way that makes two of them collide.
 
-[![The stay dial at Year 2 with the derived prompt beside it](REPLACE_WITH_DEV_UPLOAD_URL)](REPLACE_WITH_DEV_UPLOAD_URL)
+[![The stay dial at Year 2 with the derived prompt beside it](https://waiting-room-ruby.vercel.app/post/images/05-dial-year2.png)](https://waiting-room-ruby.vercel.app/post/images/05-dial-year2.png)
 
-*`post/images/05-dial-year2.png` — the readout updates from the function, not from a lookup table.*
+*The readout updates from the function, not from a lookup table.*
 
 **Read the label on that dial before you read anything into it.** It is a demonstration of what the mapping does with one variable. It is not a claim about Yuji's actual stay. More on that below, because it turned out to be the most interesting thing I found.
 
-## The mapping, and the actual code
+## How I Built It
 
 This is the intellectual core, so here it is in full. Five rules, applied in order, concatenated:
 
@@ -189,9 +201,9 @@ export function derive(attributes) {
 
 Every card shows its own working, including the rules that fired *nothing* — because a rule that stays silent because the shelter published nothing is a different thing from a rule that had nothing to say, and the panel labels which is which:
 
-[![The derivation panel showing five rules and the final prompt](REPLACE_WITH_DEV_UPLOAD_URL)](REPLACE_WITH_DEV_UPLOAD_URL)
+[![The derivation panel showing five rules and the final prompt](https://waiting-room-ruby.vercel.app/post/images/06-derivation.png)](https://waiting-room-ruby.vercel.app/post/images/06-derivation.png)
 
-*`post/images/06-derivation.png` — the record on the left, the prompt on the right, no step hidden.*
+*The record on the left, the prompt on the right, no step hidden.*
 
 Eight records in, eight distinct prompts out:
 
@@ -247,9 +259,11 @@ The absence **is** the finding. The one number that would turn this from an inte
 - **The waveform is decorative.** It's a progress bar drawn deterministically from the dog's id, not an analysis of the audio, and the page never claims otherwise.
 - **These dogs may already be adopted.** I hope so. Every card links to its source, captured 2026-08-16.
 
-## Prize category
+## Prize Categories
 
-**Best Use of ElevenLabs.** The API is not narrating this project — it's the visualisation layer. A documented pure function turns structured shelter data into a Voice Design prompt, and the generated voice *is* the output of that function, shown with its working on every card. The same function called four times with one variable moved produces the hero's stay dial, so the "one variable" claim holds by construction rather than by assertion. Nineteen clips, one stock control voice named openly, thirty-two tests, no keys, no backend, no live calls.
+**Best Use of ElevenLabs**
+
+The API is not narrating this project — it's the visualisation layer. A documented pure function turns structured shelter data into a Voice Design prompt, and the generated voice *is* the output of that function, shown with its working on every card. The same function called four times with one variable moved produces the hero's stay dial, so the "one variable" claim holds by construction rather than by assertion. Nineteen clips, one stock control voice named openly, thirty-two tests, no keys, no backend, no live calls.
 
 Built for the **DEV Weekend Challenge: Dog Days Edition** — repo created 2026-08-16, deployed and written inside the window, with Claude Code as co-author.
 
