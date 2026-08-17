@@ -1,30 +1,38 @@
 /* The Waiting Room — a listening study.
-   A desk, a stack of shelter records, and one card at a time.
-   Seven tokens, two faces, no decoration beyond paper and rules. */
+   A warm desk, a stack of shelter records, one card at a time.
+
+   Two visual languages, deliberately: the form is bureaucratic (mono, small,
+   spaced) and the dog's voice is human (serif, large, warm). The contrast is
+   the argument. */
 
 :root {
-  --desk: #d8d0c1;
-  --paper: #f4efe3;
-  --ink: #25211d;
-  --muted: #6f675d;
-  --rule: #b9ae9d;
-  --on-air: #c94a38;
-  --warm: #e4b64f;
+  --desk: #b9ab92;
+  --paper: #f2ebdd;
+  --paper-2: #e7dcc8;
+  --ink: #24201b;
+  --rule: #b3a48d;
+  --warm: #d7a83e;
+  --on-air: #c94732;
+
+  /* Mixed from the seven, never a new hue. */
+  --muted: color-mix(in srgb, var(--ink) 55%, var(--paper));
+  --faint: color-mix(in srgb, var(--ink) 34%, var(--paper));
+  --hair: color-mix(in srgb, var(--rule) 62%, var(--paper));
 
   --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --serif: 'Source Serif 4', Charter, 'Iowan Old Style', Georgia, serif;
   --display: 'Archivo Narrow', 'Archivo Condensed', Oswald, system-ui, sans-serif;
 
   --gutter: clamp(1.1rem, 3vw, 3rem);
   --page: 84rem;
-  --card-w: min(68rem, 100%);
+  --card-w: min(71rem, 100%);
+  --skirt: 3.35rem; /* room under the card for the rest of the deck */
 
   --s-1: clamp(0.5rem, 1vw, 0.75rem);
   --s-2: clamp(0.9rem, 1.8vw, 1.4rem);
   --s-3: clamp(1.5rem, 3vw, 2.5rem);
   --s-4: clamp(2.5rem, 5vw, 4.5rem);
   --s-5: clamp(4rem, 8vw, 7rem);
-
-  --card-radius: 5px;
 }
 
 *,
@@ -40,8 +48,8 @@ html {
 body {
   margin: 0;
   background-color: var(--desk);
-  /* A single very quiet grain across the desk. Nothing photographic. */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  /* A quiet tooth on the desk. Nothing photographic. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
   color: var(--ink);
   font-family: var(--mono);
   font-size: 16px;
@@ -66,7 +74,7 @@ a:hover {
 
 kbd {
   padding: 0.05em 0.35em;
-  border: 1px solid var(--rule);
+  border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
   border-radius: 2px;
   font: inherit;
   font-size: 0.85em;
@@ -101,14 +109,12 @@ kbd {
 
 /* ══ INTRODUCTION ═════════════════════════════════════════════════════════ */
 
-/* A masthead, not a cover: maximum impact, minimum height. Everything here
-   competes with the card for the first viewport, so it is kept short. */
 .intro {
   display: grid;
   gap: var(--s-2) var(--s-3);
   max-width: var(--page);
   margin: 0 auto;
-  padding: 1.5rem var(--gutter) 0.9rem;
+  padding: 1.2rem var(--gutter) 0.8rem;
 }
 
 .intro__title {
@@ -127,14 +133,14 @@ kbd {
 
 .intro__lede {
   margin: 0;
-  font-size: clamp(0.9375rem, 1.15vw, 1.0625rem);
-  line-height: 1.5;
+  font-size: 0.9375rem;
+  line-height: 1.55;
 }
 
 .intro__rule {
   width: 100%;
   max-width: 13rem;
-  margin: 0.75rem 0;
+  margin: 0.7rem 0;
   border: 0;
   border-top: 1px solid var(--rule);
 }
@@ -142,18 +148,18 @@ kbd {
 .intro__sub {
   margin: 0;
   max-width: 28ch;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: var(--muted);
   line-height: 1.6;
 }
 
-/* The finding. Largest quoted type on the page — but set wide so it lands in
-   three or four lines rather than a narrow nine-line column. */
+/* The finding: the dog's words, so it is set in the human face. */
 .finding__quote {
   margin: 0;
-  max-width: 44ch;
-  font-size: clamp(1.0625rem, 1.5vw, 1.375rem);
-  line-height: 1.5;
+  max-width: 40ch;
+  font-family: var(--serif);
+  font-size: clamp(1.125rem, 1.65vw, 1.5rem);
+  line-height: 1.4;
   font-weight: 400;
   quotes: '“' '”';
 }
@@ -169,9 +175,9 @@ kbd {
 #finding::after {
   content: '';
   display: block;
-  width: min(100%, 24rem);
-  height: 4px;
-  margin: 0.65rem 0 0.55rem;
+  width: min(100%, 22rem);
+  height: 3px;
+  margin: 0.6rem 0 0.5rem;
   background: var(--warm);
 }
 
@@ -179,10 +185,11 @@ kbd {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.55rem;
   margin: 0;
-  font-size: 0.75rem;
-  letter-spacing: 0.18em;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
 }
 
 .finding__names button {
@@ -201,7 +208,7 @@ kbd {
 }
 
 .finding__dot {
-  color: var(--rule);
+  color: var(--faint);
 }
 
 /* A debossed stamp, not a logo. */
@@ -212,7 +219,7 @@ kbd {
   padding: 1.05rem 0.5rem;
   width: 6.25rem;
   height: 6.25rem;
-  border: 1px solid var(--rule);
+  border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
   border-radius: 50%;
   color: var(--muted);
   font-size: 0.5625rem;
@@ -220,7 +227,7 @@ kbd {
   line-height: 1.9;
   text-align: center;
   text-transform: uppercase;
-  opacity: 0.75;
+  opacity: 0.7;
 }
 
 .intro__stamp span {
@@ -229,7 +236,7 @@ kbd {
 
 @media (min-width: 64rem) {
   .intro {
-    grid-template-columns: auto minmax(12rem, 15rem) minmax(24rem, 1fr) auto;
+    grid-template-columns: auto minmax(11rem, 14rem) minmax(22rem, 1fr) auto;
     align-items: start;
     gap: var(--s-3);
   }
@@ -259,8 +266,7 @@ kbd {
   position: relative;
   justify-self: center;
   width: var(--card-w);
-  /* Room beneath for the edges of the cards still in the deck. */
-  padding-bottom: 3rem;
+  padding-bottom: var(--skirt);
 }
 
 /* ── the card ── */
@@ -269,67 +275,73 @@ kbd {
   --drag: 0px;
   --tilt: 0deg;
   --stay: 0;
-  min-height: 31rem;
-  padding: clamp(1.25rem, 2.4vw, 2rem) clamp(1.25rem, 2.6vw, 2.25rem);
-  background: var(--paper);
-  border-radius: var(--card-radius);
+  min-height: 33rem;
+  padding: clamp(1.25rem, 1.9vw, 1.8rem) clamp(1.4rem, 2.8vw, 2.75rem)
+    clamp(1.1rem, 1.6vw, 1.4rem);
+  background-color: var(--paper);
+  /* The same tooth as the desk, a shade softer, so the paper reads as stock. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  border-radius: 7px;
   box-shadow:
-    0 1px 1px rgba(37, 33, 29, 0.07),
-    0 10px 24px -12px rgba(37, 33, 29, 0.3);
+    0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent) inset,
+    0 2px 3px -1px color-mix(in srgb, var(--ink) 16%, transparent),
+    0 22px 40px -22px color-mix(in srgb, var(--ink) 55%, transparent);
   transition:
     transform 420ms cubic-bezier(0.22, 0.75, 0.2, 1),
     opacity 320ms ease,
     background-color 520ms ease;
 }
 
-/* Cards behind the active one are pinned to exactly the active card's box, so
-   the offset and tilt below are the only thing that shows them. Without this
-   they inherit their own content height and hide completely. */
+/* Cards behind are pinned to the active card's box; only the offset and tilt
+   below reveal them. Without this they take their own content height and hide. */
 .card:not(.is-active) {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  bottom: 3rem;
+  bottom: var(--skirt);
   overflow: hidden;
   pointer-events: none;
 }
 
 .card.is-active {
   position: relative;
-  z-index: 5;
+  z-index: 6;
 }
 
 .card[data-offset='0'] {
   transform: translateX(var(--drag)) rotate(var(--tilt));
 }
 
-/* The deck: enough offset and tilt to read as physical paper, small enough to
-   stay tidy. Each layer also sits a shade darker, as stacked stock does. */
+/* Four sheets of slightly different stock, fanned. Elegant, not scrapbook. */
 .card[data-offset='1'] {
-  transform: translateY(1.05rem) rotate(-0.9deg) scale(0.996);
-  background: color-mix(in srgb, var(--rule) 14%, var(--paper));
-  z-index: 4;
+  transform: translate(0.7rem, 1.1rem) rotate(-0.8deg);
+  background-color: var(--paper-2);
+  z-index: 5;
 }
 
 .card[data-offset='2'] {
-  transform: translateY(2.1rem) rotate(1.25deg) scale(0.992);
-  background: color-mix(in srgb, var(--warm) 16%, var(--paper));
-  z-index: 3;
+  transform: translate(-0.85rem, 2.1rem) rotate(1.15deg);
+  background-color: color-mix(in srgb, var(--warm) 14%, var(--paper-2));
+  z-index: 4;
 }
 
 .card[data-offset='3'] {
-  transform: translateY(3.05rem) rotate(-0.5deg) scale(0.988);
-  background: color-mix(in srgb, var(--rule) 30%, var(--paper));
+  transform: translate(0.55rem, 3rem) rotate(-0.5deg);
+  background-color: color-mix(in srgb, var(--rule) 42%, var(--paper-2));
+  z-index: 3;
+}
+
+.card[data-offset='4'] {
+  transform: translate(-0.35rem, 3.8rem) rotate(0.4deg);
+  background-color: color-mix(in srgb, var(--rule) 65%, var(--paper-2));
   z-index: 2;
 }
 
-/* Everything further back, and everything already seen, is out of the way. */
-.card[data-offset='4'],
 .card[data-offset='5'],
 .card[data-offset='6'],
 .card[data-offset='7'] {
-  transform: translateY(3.2rem) scale(0.92);
+  transform: translateY(4rem);
   opacity: 0;
   z-index: 1;
 }
@@ -344,27 +356,27 @@ kbd {
   transition: none;
 }
 
-/* Designed mode warms the paper. A shift in the stock, never a wash. */
+/* Designed mode warms the stock. A shift in the paper, never a wash. */
 .card[data-mode='designed'] {
-  background-color: color-mix(in srgb, var(--warm) calc(13% * (1 - var(--stay))), var(--paper));
+  background-color: color-mix(in srgb, var(--warm) calc(15% * (1 - var(--stay))), var(--paper));
 }
 
-/* ── card head ── */
-
-.card__head p {
-  margin: 0;
-}
+/* ── head: administrative, quiet, spaced ── */
 
 .card__head {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   gap: 1rem;
-  margin: 0;
-  font-size: 0.75rem;
-  letter-spacing: 0.14em;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+.card__head p {
+  margin: 0;
 }
 
 .card__count b {
@@ -373,17 +385,16 @@ kbd {
 }
 
 .card__source {
-  margin: 0;
   text-align: right;
   color: var(--ink);
 }
 
 .card__name {
-  margin: clamp(0.4rem, 1vw, 0.7rem) 0 0;
+  margin: clamp(0.75rem, 1.4vw, 1.1rem) 0 0;
   font-family: var(--display);
   font-weight: 700;
-  font-size: clamp(2.5rem, 6.5vw, 4.25rem);
-  line-height: 0.88;
+  font-size: clamp(2.5rem, 6.5vw, 4.75rem);
+  line-height: 0.86;
   letter-spacing: -0.02em;
   text-transform: uppercase;
   overflow-wrap: break-word;
@@ -392,28 +403,28 @@ kbd {
 .card__meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem 0.9rem;
-  margin: 0.55rem 0 0;
-  font-size: 0.75rem;
-  letter-spacing: 0.14em;
+  gap: 0.3rem 0.85rem;
+  margin: 0.7rem 0 0;
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 .card__meta span + span::before {
   content: '·';
-  margin-right: 0.9rem;
-  color: var(--rule);
+  margin-right: 0.85rem;
+  color: var(--faint);
 }
 
 .card__rule {
-  margin: 0.85rem 0 1rem;
+  margin: clamp(0.85rem, 1.7vw, 1.2rem) 0 clamp(0.95rem, 1.9vw, 1.35rem);
   border: 0;
   border-top: 1px solid var(--rule);
 }
 
-/* The card is landscape: the document reads on the left, the instruments sit
-   on the right. Stacking these vertically is what made it three screens tall. */
+/* ── the body: document left, instrument right ── */
+
 .card__cols {
   display: grid;
   gap: var(--s-2);
@@ -421,59 +432,69 @@ kbd {
 
 @media (min-width: 60rem) {
   .card__cols {
-    grid-template-columns: minmax(0, 1.8fr) minmax(18rem, 1fr);
-    gap: var(--s-3);
+    grid-template-columns: minmax(0, 1.75fr) minmax(17rem, 1fr);
+    gap: clamp(1.75rem, 3.5vw, 3.25rem);
   }
 
   .card__apparatus {
-    padding-left: var(--s-3);
-    border-left: 1px dashed var(--rule);
+    padding-left: clamp(1.5rem, 3vw, 2.5rem);
+    border-left: 1px solid var(--hair);
   }
 }
 
-/* ── the listing: the reason the page exists, so it is set to be read ── */
+/* ── the listing: a person's words, so it is set like prose ── */
 
 .listing {
   margin: 0;
-  max-width: 68ch;
-  font-size: 1rem;
+  max-width: 62ch;
+  font-family: var(--serif);
+  font-size: clamp(1.0625rem, 1.35vw, 1.25rem);
   font-weight: 400;
-  line-height: 1.7;
+  line-height: 1.62;
+  letter-spacing: 0.002em;
 }
 
+/* Sentences the shelter reused. Marked, never reworded. */
 .thread {
-  box-shadow: inset 0 -1px 0 var(--rule);
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--warm) 70%, var(--rule));
 }
 
-/* ── the template, made visible ── */
+/* ── the echo: an annotation printed onto the record ── */
 
 .echo {
-  margin: var(--s-3) 0 0;
-  padding: var(--s-2);
-  border-left: 3px solid var(--warm);
-  background: color-mix(in srgb, var(--rule) 14%, transparent);
+  margin: clamp(1.1rem, 2.4vw, 1.75rem) 0 0;
+  padding: 0.9rem 0 0.2rem 1.1rem;
+  border-left: 2px solid var(--warm);
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--paper-2) 82%, transparent),
+    transparent 82%
+  );
 }
 
 .echo__label,
 .echo__names {
   margin: 0;
-  font-size: 0.6875rem;
-  letter-spacing: 0.18em;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 .echo__quote {
-  margin: 0.5rem 0;
-  font-size: 0.9375rem;
-  line-height: 1.6;
+  margin: 0.45rem 0 0.55rem;
+  font-family: var(--serif);
+  font-size: 1rem;
   font-style: italic;
+  line-height: 1.5;
+  color: var(--ink);
 }
 
 .echo__names {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.45rem;
   align-items: center;
 }
 
@@ -500,14 +521,11 @@ kbd {
 }
 
 .echo__names span {
-  color: var(--rule);
+  color: var(--faint);
 }
 
-/* A tear-off perforation between the record and its apparatus. */
-.card__perf { /* retained for the mobile stack */
-  margin: var(--s-3) 0;
-  border: 0;
-  border-top: 1px dashed var(--rule);
+.card__perf {
+  display: none;
 }
 
 /* ══ VOICE ════════════════════════════════════════════════════════════════ */
@@ -522,18 +540,18 @@ kbd {
 .voice__title {
   margin: 0;
   font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
+  font-weight: 600;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
-/* The only red on the page, and only while sound is actually coming out. */
+/* The only red on the page, and only while sound is coming out. */
 .onair {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   margin: 0;
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -547,8 +565,8 @@ kbd {
 }
 
 .onair__dot {
-  width: 0.45rem;
-  height: 0.45rem;
+  width: 0.4rem;
+  height: 0.4rem;
   border-radius: 50%;
   background: var(--on-air);
 }
@@ -559,27 +577,28 @@ kbd {
 
 @keyframes air {
   50% {
-    opacity: 0.3;
+    opacity: 0.28;
   }
 }
 
 .voice__note {
-  margin: 0.35rem 0 0.7rem;
-  max-width: 52ch;
-  font-size: 0.75rem;
-  line-height: 1.6;
+  margin: 0.35rem 0 clamp(0.8rem, 1.6vw, 1.1rem);
+  max-width: 40ch;
+  font-family: var(--serif);
+  font-size: 0.875rem;
+  line-height: 1.45;
   color: var(--muted);
 }
 
-/* ── the switch: one bar, two halves, a knob on the seam ── */
+/* ── the switch: one strong horizontal object on the document ── */
 
 .switch {
   position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  border: 1px solid var(--ink);
   border-radius: 3px;
   overflow: hidden;
+  box-shadow: 0 0 0 1px var(--ink);
 }
 
 .switch__half {
@@ -590,7 +609,7 @@ kbd {
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: background-color 320ms ease, color 320ms ease;
+  transition: background-color 380ms ease, color 380ms ease;
 }
 
 .switch__half--designed {
@@ -607,10 +626,10 @@ kbd {
 
 .switch__gloss {
   display: block;
-  margin-top: 0.1rem;
+  margin-top: 0.15rem;
   font-size: 0.5625rem;
-  font-weight: 300;
-  letter-spacing: 0.02em;
+  font-weight: 400;
+  letter-spacing: 0.06em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -621,23 +640,33 @@ kbd {
   color: var(--paper);
 }
 
+.switch__half--flat.is-on .switch__gloss {
+  color: color-mix(in srgb, var(--paper) 62%, var(--ink));
+}
+
 .switch__half--designed.is-on {
   background: var(--warm);
   color: var(--ink);
 }
 
-/* The knob sits on the seam like a physical detent. */
+.switch__half--designed.is-on .switch__gloss {
+  color: color-mix(in srgb, var(--ink) 65%, var(--warm));
+}
+
+/* A detent on the seam. */
 .switch__knob {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 1.15rem;
-  height: 1.15rem;
-  margin: -0.575rem 0 0 -0.575rem;
-  border: 1px solid var(--ink);
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: -0.525rem 0 0 -0.525rem;
   border-radius: 50%;
   background: var(--paper);
-  box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 6px var(--ink);
+  box-shadow:
+    0 0 0 1px var(--ink),
+    inset 0 0 0 3px var(--paper),
+    inset 0 0 0 5px var(--ink);
   pointer-events: none;
   z-index: 2;
 }
@@ -647,16 +676,16 @@ kbd {
 .player {
   display: flex;
   align-items: center;
-  gap: var(--s-2);
-  margin-top: 0.8rem;
+  gap: 0.9rem;
+  margin-top: clamp(0.8rem, 1.5vw, 1.05rem);
 }
 
 .player__play {
   flex: none;
   display: grid;
   place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.4rem;
+  height: 2.4rem;
   padding: 0;
   border: 1px solid var(--ink);
   border-radius: 50%;
@@ -675,32 +704,32 @@ kbd {
   width: 0;
   height: 0;
   margin-left: 0.15rem;
-  border-left: 0.6rem solid currentColor;
-  border-top: 0.38rem solid transparent;
-  border-bottom: 0.38rem solid transparent;
+  border-left: 0.58rem solid currentColor;
+  border-top: 0.36rem solid transparent;
+  border-bottom: 0.36rem solid transparent;
 }
 
 .player__play.is-playing .player__glyph {
-  width: 0.55rem;
-  height: 0.7rem;
+  width: 0.52rem;
+  height: 0.68rem;
   margin-left: 0;
   border: 0;
   background: currentColor;
-  box-shadow: inset 0 0 0 0.15rem var(--paper);
+  box-shadow: inset 0 0 0 0.14rem var(--paper);
 }
 
 .player__play.is-playing:hover .player__glyph {
-  box-shadow: inset 0 0 0 0.15rem var(--ink);
+  box-shadow: inset 0 0 0 0.14rem var(--ink);
 }
 
-/* The waveform is a progress indicator drawn in the document's language. */
+/* A progress indicator drawn in the document's language. */
 .wave {
   position: relative;
   flex: 1;
   display: flex;
   align-items: center;
   gap: 1px;
-  height: 2.25rem;
+  height: 2rem;
   min-width: 0;
   cursor: pointer;
 }
@@ -708,7 +737,7 @@ kbd {
 .wave span {
   flex: 1;
   min-width: 0;
-  background: var(--ink);
+  background: color-mix(in srgb, var(--ink) 80%, var(--paper));
 }
 
 .wave__mask {
@@ -717,21 +746,21 @@ kbd {
   right: 0;
   bottom: 0;
   width: 100%;
-  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  background: color-mix(in srgb, var(--paper) 76%, transparent);
   pointer-events: none;
   transition: width 180ms linear;
 }
 
 .card[data-mode='designed'] .wave span {
-  background: color-mix(in srgb, var(--ink) 78%, var(--warm));
+  background: color-mix(in srgb, var(--ink) 60%, var(--warm));
 }
 
 .player__time {
   flex: none;
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: var(--muted);
 }
 
@@ -742,33 +771,32 @@ kbd {
 
 /* ══ THE STAY DIAL (hero only) ════════════════════════════════════════════ */
 
-/* A full-width instrument across the foot of the card. Laid out horizontally
-   because stacking label / track / stops / prompt / caveat is what pushed the
-   card past a screen. */
+/* A full-width instrument across the foot of the card: track on the left,
+   readout on the right. Stacking it in a column doubled its height. */
 .dial {
   display: grid;
-  gap: var(--s-2);
-  margin-top: 0.9rem;
-  padding-top: 0.9rem;
-  border-top: 1px dashed var(--rule);
+  gap: 0.7rem;
+  margin-top: clamp(0.9rem, 1.8vw, 1.25rem);
+  padding-top: clamp(0.8rem, 1.6vw, 1.1rem);
+  border-top: 1px solid var(--hair);
 }
 
 @media (min-width: 60rem) {
   .dial {
-    grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.95fr);
-    gap: var(--s-2);
+    grid-template-columns: minmax(0, 1.75fr) minmax(17rem, 1fr);
+    gap: clamp(1.75rem, 3.5vw, 3.25rem);
     align-items: start;
   }
 
   .dial__readout {
-    padding-left: var(--s-2);
-    border-left: 1px dashed var(--rule);
+    padding-left: clamp(1.5rem, 3vw, 2.5rem);
+    border-left: 1px solid var(--hair);
   }
 }
 
 .dial__label {
-  margin: 0 0 0.4rem;
-  font-size: 0.6875rem;
+  margin: 0;
+  font-size: 0.625rem;
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -784,9 +812,10 @@ kbd {
 
 .dial__track {
   --pos: 0;
-  --inset: 0.6rem;
+  --inset: 0.55rem;
   position: relative;
-  height: 2.1rem;
+  height: 1.9rem;
+  margin-top: 0.35rem;
 }
 
 .dial__rule,
@@ -797,7 +826,7 @@ kbd {
 
 .dial__rule {
   position: absolute;
-  top: 1.35rem;
+  top: 1.15rem;
   left: var(--inset);
   right: var(--inset);
   height: 1px;
@@ -806,7 +835,7 @@ kbd {
 
 .dial__marks {
   position: absolute;
-  top: 0.7rem;
+  top: 0.6rem;
   left: var(--inset);
   right: var(--inset);
   display: flex;
@@ -815,16 +844,16 @@ kbd {
 
 .dial__marks span {
   width: 1px;
-  height: 1.3rem;
-  background: var(--ink);
+  height: 1.1rem;
+  background: color-mix(in srgb, var(--ink) 55%, var(--paper));
 }
 
 .dial__marker {
   position: absolute;
-  top: 0.75rem;
+  top: 0.62rem;
   left: calc(var(--inset) + (100% - 2 * var(--inset)) * var(--pos) / (var(--stops) - 1));
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1.1rem;
+  height: 1.1rem;
   margin-left: calc(var(--inset) * -1);
   background: var(--ink);
   border-radius: 2px;
@@ -854,10 +883,10 @@ kbd {
 .dial__stops {
   display: flex;
   justify-content: space-between;
-  margin: 0.2rem 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 0.625rem;
+  font-size: 0.5625rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
@@ -880,7 +909,7 @@ kbd {
   display: block;
   margin-top: 0.1rem;
   font-style: normal;
-  color: var(--rule);
+  color: var(--faint);
 }
 
 .dial__stop.is-on {
@@ -895,15 +924,15 @@ kbd {
 .dial__prompt-label {
   display: block;
   margin-bottom: 0.2rem;
-  font-size: 0.625rem;
+  font-size: 0.5625rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 .dial__prompt code {
-  font-size: 0.8125rem;
-  line-height: 1.5;
+  font-size: 0.75rem;
+  line-height: 1.45;
   overflow-wrap: anywhere;
 }
 
@@ -921,25 +950,26 @@ kbd {
 }
 
 .dial__caveat {
-  margin: 0.4rem 0 0;
-  font-size: 0.6875rem;
+  margin: 0.3rem 0 0;
+  font-family: var(--serif);
+  font-size: 0.75rem;
   font-style: italic;
-  line-height: 1.55;
+  line-height: 1.45;
   color: var(--muted);
 }
 
 /* ══ DERIVATION ═══════════════════════════════════════════════════════════ */
 
 .derivation {
-  margin-top: 0.6rem;
-  border-top: 1px solid var(--rule);
+  margin-top: clamp(0.8rem, 1.5vw, 1.1rem);
+  border-top: 1px solid var(--hair);
 }
 
 .derivation summary {
-  padding: 0.55rem 0;
-  font-size: 0.6875rem;
+  padding: 0.6rem 0 0;
+  font-size: 0.625rem;
   font-weight: 500;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--muted);
   cursor: pointer;
@@ -962,6 +992,10 @@ kbd {
   color: var(--ink);
 }
 
+.derivation__panel {
+  padding-top: 0.9rem;
+}
+
 .rules {
   width: 100%;
   border-collapse: collapse;
@@ -972,7 +1006,7 @@ kbd {
 .rules th,
 .rules td {
   padding: 0.4rem 0.6rem 0.4rem 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--rule) 55%, transparent);
+  border-bottom: 1px solid var(--hair);
   vertical-align: top;
   font-weight: 400;
 }
@@ -1008,15 +1042,13 @@ kbd {
 }
 
 .derivation__out code {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
 
 .card__origin {
   margin: var(--s-2) 0 0;
-  padding-top: var(--s-2);
-  border-top: 1px solid var(--rule);
   font-size: 0.6875rem;
   line-height: 1.7;
   color: var(--muted);
@@ -1027,10 +1059,10 @@ kbd {
 .arrow {
   display: grid;
   place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 2.6rem;
+  height: 2.6rem;
   padding: 0;
-  border: 1px solid var(--rule);
+  border: 1px solid color-mix(in srgb, var(--ink) 32%, transparent);
   border-radius: 50%;
   background: transparent;
   color: var(--ink);
@@ -1046,30 +1078,30 @@ kbd {
 }
 
 .arrow:disabled {
-  opacity: 0.28;
+  opacity: 0.25;
   cursor: default;
 }
 
 .deck__hint {
-  margin: 0.6rem 0 0;
+  margin: 0.55rem 0 0;
   text-align: center;
-  font-size: 0.6875rem;
-  letter-spacing: 0.16em;
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: color-mix(in srgb, var(--ink) 45%, var(--desk));
 }
 
 .deck__hint-glyph {
   margin-right: 0.4rem;
 }
 
-/* ── index: file tabs along the bottom of the deck ── */
+/* ── index: file-folder tabs along the foot of the deck ── */
 
 .index {
   display: flex;
-  gap: 2px;
-  margin-top: 0.6rem;
-  padding-bottom: 2px;
+  gap: 3px;
+  margin-top: 0.55rem;
+  padding-bottom: 1px;
   overflow-x: auto;
   scrollbar-width: thin;
 }
@@ -1077,46 +1109,67 @@ kbd {
 .index__item {
   flex: 1 0 auto;
   min-width: 6.5rem;
-  padding: 0.5rem 0.75rem 0.6rem;
+  padding: 0.5rem 0.75rem 0.55rem;
   border: 0;
-  border-top: 2px solid transparent;
-  border-radius: 4px 4px 0 0;
-  background: color-mix(in srgb, var(--paper) 55%, transparent);
+  border-radius: 5px 5px 0 0;
+  background: color-mix(in srgb, var(--paper-2) 55%, var(--desk));
   color: var(--muted);
   font: inherit;
   text-align: center;
   cursor: pointer;
-  transition: background-color 220ms ease, color 220ms ease;
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--ink) 12%, transparent);
+  transition: background-color 220ms ease, color 220ms ease, transform 220ms ease;
 }
 
 .index__item:hover {
-  background: color-mix(in srgb, var(--paper) 80%, transparent);
+  background: color-mix(in srgb, var(--paper-2) 85%, var(--desk));
   color: var(--ink);
 }
 
 .index__n {
   display: block;
-  font-size: 0.625rem;
-  letter-spacing: 0.16em;
+  font-size: 0.5625rem;
+  letter-spacing: 0.18em;
 }
 
 .index__name {
   display: block;
-  margin-top: 0.15rem;
-  font-size: 0.75rem;
+  margin-top: 0.1rem;
+  font-size: 0.6875rem;
   font-weight: 500;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
+/* The active tab is the front of the file: raised, lighter, marked in red. */
 .index__item.is-on {
   background: var(--paper);
-  border-top-color: var(--on-air);
   color: var(--ink);
+  transform: translateY(-4px);
+  box-shadow:
+    0 3px 0 var(--paper),
+    0 -5px 12px -7px color-mix(in srgb, var(--ink) 45%, transparent);
+}
+
+.index__item.is-on .index__name {
+  position: relative;
+}
+
+/* A struck rule under the name, the way a file tab is marked. */
+.index__item.is-on .index__name::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -0.28rem;
+  width: 1.6rem;
+  height: 2px;
+  margin-left: -0.8rem;
+  background: var(--on-air);
 }
 
 .index__item.is-on .index__n {
   color: var(--on-air);
+  font-weight: 600;
 }
 
 /* ══ ABOUT ════════════════════════════════════════════════════════════════ */
@@ -1131,7 +1184,7 @@ kbd {
   display: grid;
   gap: var(--s-3);
   padding-top: var(--s-3);
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
 }
 
 @media (min-width: 56rem) {
@@ -1142,13 +1195,13 @@ kbd {
 
   .about__col + .about__col {
     padding-left: var(--s-3);
-    border-left: 1px solid var(--rule);
+    border-left: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
   }
 }
 
 .about__col h2 {
   margin: 0 0 var(--s-2);
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -1157,35 +1210,39 @@ kbd {
 
 .about__col p {
   margin: 0 0 0.9rem;
-  font-size: 0.8125rem;
-  line-height: 1.8;
+  font-family: var(--serif);
+  font-size: 0.9375rem;
+  line-height: 1.6;
 }
 
 .about__fine {
   color: var(--muted);
+  font-size: 0.875rem !important;
 }
 
 .steps {
   margin: 0 0 0.9rem;
   padding: 0;
   list-style: none;
-  font-size: 0.8125rem;
-  line-height: 1.75;
+  font-family: var(--serif);
+  font-size: 0.9375rem;
+  line-height: 1.55;
 }
 
 .steps li {
   display: grid;
   grid-template-columns: 2.25rem 1fr;
   gap: 0.5rem;
-  padding: 0.55rem 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--rule) 50%, transparent);
+  padding: 0.5rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
 }
 
 .steps__n {
+  font-family: var(--mono);
   font-size: 0.625rem;
   letter-spacing: 0.14em;
   color: var(--muted);
-  padding-top: 0.28rem;
+  padding-top: 0.3rem;
 }
 
 .about__heart {
@@ -1200,21 +1257,17 @@ kbd {
   gap: 0.5rem;
   margin: var(--s-4) 0 0;
   padding-top: var(--s-2);
-  border-top: 1px solid var(--rule);
-  font-size: 0.625rem;
+  border-top: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+  font-size: 0.5625rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
-/* ══ SMALL SCREENS ════════════════════════════════════════════════════════
-   Recomposed: the card keeps the viewport, the arrows move under it. */
+/* ══ SMALL SCREENS ════════════════════════════════════════════════════════ */
 
 @media (max-width: 48rem) {
-  /* The masthead must not eat the phone: the card should be reachable in a
-     glance, not after a scroll. */
-  /* Title and premise sit side by side even on a phone — stacking every block
-     pushed the card off the screen entirely. */
+  /* Title and premise side by side, so the card is reachable at a glance. */
   .intro {
     grid-template-columns: auto minmax(0, 1fr);
     align-items: start;
@@ -1231,7 +1284,6 @@ kbd {
     grid-column: 2;
   }
 
-  .intro__finding,
   #finding {
     grid-column: 1 / -1;
   }
@@ -1245,11 +1297,7 @@ kbd {
   }
 
   .finding__quote {
-    font-size: 1rem;
-  }
-
-  #finding::after {
-    margin: 0.5rem 0 0.4rem;
+    font-size: 1.0625rem;
   }
 
   /* Stacked, so a wrapped line never begins with a stray separator. */
@@ -1257,12 +1305,12 @@ kbd {
     display: block;
   }
 
-  .card__meta span + span::before {
-    content: none;
-  }
-
   .card__meta span {
     display: block;
+  }
+
+  .card__meta span + span::before {
+    content: none;
   }
 
   .deck {
@@ -1279,8 +1327,8 @@ kbd {
     display: none;
   }
 
-  .card__head {
-    font-size: 0.6875rem;
+  .card {
+    min-height: 0;
   }
 
   .switch {
@@ -1289,7 +1337,7 @@ kbd {
 
   .switch__half--designed {
     text-align: left;
-    border-top: 1px solid var(--ink);
+    box-shadow: 0 -1px 0 var(--ink);
   }
 
   .switch__knob {

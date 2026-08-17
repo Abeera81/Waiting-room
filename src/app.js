@@ -105,7 +105,6 @@ function renderCard(dog, i) {
       <div class="card__doc">
         <blockquote class="listing">${renderListing(dog)}</blockquote>
         ${renderEcho(dog)}
-        ${dog.hero ? renderDial(dog) : ''}
       </div>
 
       <div class="card__apparatus">
@@ -143,6 +142,8 @@ function renderCard(dog, i) {
         </div>
       </div>
     </div>
+
+    ${dog.hero ? renderDial(dog) : ''}
 
     <details class="derivation">
       <summary><span>How this voice was derived</span></summary>
@@ -237,9 +238,7 @@ function renderDial(dog) {
 
       <div class="dial__readout">
         <p class="dial__prompt"><span class="dial__prompt-label">Prompt at this stop</span><code></code></p>
-        <p class="dial__caveat">
-          A demonstration of the mapping — not a real stay. No shelter publishes intake dates.
-        </p>
+        <p class="dial__caveat">A demonstration of the mapping, not a real stay.</p>
       </div>
     </section>
   `;

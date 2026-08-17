@@ -186,18 +186,24 @@ The card **is** an institutional document in flat mode and **becomes** something
 **Reference:** `reference/waiting-room-reference.png.png` is the visual north star, supplied 2026-08-17. Treat it as art direction, never as content — its card copy is mock and contradicts the real data (it labels Yuji as Oregon Humane, "3 YR", and rewrites his listing). **Composition from the image, every word from `dogs.json`.**
 
 ```
---desk    #D8D0C1   the surface the records sit on
---paper   #F4EFE3   a shelter record
---ink     #25211D   primary text
---muted   #6F675D   administrative, secondary
---rule    #B9AE9D   document dividers
---on-air  #C94A38   ONLY the live audio indicator
---warm    #E4B64F   ONLY the designed-voice state
+--desk     #B9AB92   the warm surface the records sit on
+--paper    #F2EBDD   the active record
+--paper-2  #E7DCC8   the sheets behind it
+--ink      #24201B   primary text
+--rule     #B3A48D   document dividers
+--warm     #D7A83E   ONLY the designed-voice state
+--on-air   #C94732   ONLY the live audio indicator
 ```
 
-No eighth colour. Shadows are `--ink` at low alpha, never a new hue.
+Seven values, no eighth. Every tint, shadow and hairline is a `color-mix` of these — there are zero `rgba()`/`hsl()` literals in the stylesheet. The desk must stay clearly **darker and warmer** than the paper: that value gap is what makes the card read as an object on a surface rather than a panel on a page.
 
-**Type:** condensed grotesque for the title and dog names (Archivo Narrow / Oswald); IBM Plex Mono for everything else because kennel cards are typewritten. Mono is the document's language, **not an excuse for small text** — the listing never drops below 16px and sits at 1.85 line-height. Labels are 0.6875rem uppercase and always secondary.
+**Type — two languages, and the split is the argument.** The form is bureaucratic and the dog's voice is human:
+
+- **IBM Plex Mono** for everything administrative — record number, shelter, age, breed, labels, controls, navigation, the derivation table. Small, spaced, quiet.
+- **Source Serif 4** for anything the dog or the shelter *wrote* — the listing, the shared sentence in the masthead and the echo block, the project explanation. Set at ~19px/1.62 so it reads as prose, never as data.
+- **Archivo Narrow** for the title and dog names only.
+
+Never set a listing in mono: it turns a person's words into technical documentation, which is the opposite of the point.
 
 **The structure is a card deck, not a list.** One record at a time on a desk, with the next few cards showing their top edges beneath it. Navigation by arrows, drag/swipe, arrow keys, and a tab index. Four parts: editorial introduction → deck → index → project explanation. The active card is the single visual centre; nothing else may compete with it.
 
